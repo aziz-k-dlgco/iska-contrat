@@ -1,0 +1,2 @@
+path=/home/azk/scrapped-websites
+lang=

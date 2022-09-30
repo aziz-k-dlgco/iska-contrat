@@ -1,0 +1,4 @@
+<?xml version="1.0" ?>
+<apport>
+  <ignore program="/usr/bin/mysql-workbench-bin" mtime="1627025360"/>
+</apport>

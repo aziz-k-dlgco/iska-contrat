@@ -1,0 +1,2 @@
+JRE_VERSION	/opt/Visual_Paradigm_CE_16.3/jre	11	0	10	0
+JRE_INFO	/opt/Visual_Paradigm_CE_16.3/jre	1615540859	1615540859	110

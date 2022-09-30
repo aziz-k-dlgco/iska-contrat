@@ -1,0 +1,56 @@
+2
+2+2
+2**2
+2%3
+4%~
+4%3
+4//3
+25//6
+z
+a = 2
+a
+quit()
+14%3
+14%2
+a = 2
+a.y = 2
+exit()
+a = {x: 2}
+a = {"x": 2}
+a.x
+a["x"]
+exit()
+print("Hello World !")
+print("\u2764")
+print("\fAziz")
+print("\aAziz")
+print("fzefzef\aAziz")
+print("fzefzef\bAziz")
+print("fzefzef\fAziz")
+print("fzefzef\nAziz")
+print("fzefzef\rAziz")
+print("fzefzef\rAzizk")
+print("fzefzef\tAzizk")
+print("fzefzef\vAzizk")
+clear
+bonjour = "Hello"
+bonjour
+os.system('clear')
+import os
+os.system('clear')
+a, b = 5, 10
+a
+b
+ a = b = c =5
+ a = b = c = 5
+a = b = c = 5
+a
+id(a)
+id(b)
+id(c)
+id(5)
+type(5)
+type(type(5))
+a = input('A : ')
+a
+import cv2

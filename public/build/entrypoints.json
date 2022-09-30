@@ -1,0 +1,48 @@
+{
+  "entrypoints": {
+    "base_template_js": {
+      "js": [
+        "/build/runtime.ec2b70cf.js",
+        "/build/755.5a8586e9.js",
+        "/build/base_template_js.ff87a3c2.js"
+      ],
+      "css": [
+        "/build/base_template_js.a96554c9.css"
+      ]
+    },
+    "gestion_obligation_new": {
+      "js": [
+        "/build/runtime.ec2b70cf.js",
+        "/build/755.5a8586e9.js",
+        "/build/101.90d83898.js",
+        "/build/gestion_obligation_new.58020465.js"
+      ]
+    },
+    "gestion_process_traitement": {
+      "js": [
+        "/build/runtime.ec2b70cf.js",
+        "/build/755.5a8586e9.js",
+        "/build/gestion_process_traitement.0125ef68.js"
+      ]
+    },
+    "reporting": {
+      "js": [
+        "/build/runtime.ec2b70cf.js",
+        "/build/101.90d83898.js",
+        "/build/reporting.d9432883.js"
+      ]
+    },
+    "admin_acc_mgmt_js": {
+      "js": [
+        "/build/runtime.ec2b70cf.js",
+        "/build/755.5a8586e9.js",
+        "/build/101.90d83898.js",
+        "/build/294.3b313ec0.js",
+        "/build/admin_acc_mgmt_js.f2506b6b.js"
+      ],
+      "css": [
+        "/build/admin_acc_mgmt_js.0b1c3144.css"
+      ]
+    }
+  }
+}

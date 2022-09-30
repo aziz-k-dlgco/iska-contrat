@@ -1,0 +1,12 @@
+services:
+
+  www:
+    ports:
+      - "80:8000"
+      - "443:443"
+    extra_hosts:
+      - "AD-Serv:10.177.66.12"
+
+  phpmyadmin:
+    ports:
+      - "9974:80"
