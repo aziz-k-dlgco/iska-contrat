@@ -21,10 +21,10 @@ class LdapAuthService
         string $password,
     ) : bool
     {
-        $this->logger->info("[LDAP Authentification] - Start - {$username}");
+        $this->logger->info("[LDAP Authentification] - Start - Utilisateur {$username}");
         //Check if dev mode
         if ($this->kernel->getEnvironment() === 'dev') {
-            $this->logger->info("[LDAP Authentification] - Dev mode - {$username} - OK");
+            $this->logger->info("[LDAP Authentification] - Dev mode - Utilisateur : {$username} - OK");
             return true;
         }
 
@@ -44,10 +44,10 @@ class LdapAuthService
         try{
             $this->logger->info('[LDAP Authentification] - Bind');
             $ldap->bind($username, $password);
-            $this->logger->info('[LDAP Authentification] - Bind - Success');
+            $this->logger->info('[LDAP Authentification] - Prod mode - Utilisateur : '.$username.' - OK');
             return true;
         } catch (\Exception $e) {
-            $this->logger->info('[LDAP Authentification] - Bind - Failure');
+            $this->logger->error('[LDAP Authentification] - Prod mode - Utilisateur : '.$username.' - FAIL');
             return false;
         }
     }
