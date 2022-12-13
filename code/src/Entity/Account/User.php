@@ -5,7 +5,9 @@ namespace App\Entity\Account;
 use Andante\TimestampableBundle\Timestampable\TimestampableInterface;
 use Andante\TimestampableBundle\Timestampable\TimestampableTrait;
 use App\Repository\Account\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Table(name: '`t_user`')]
@@ -16,15 +18,25 @@ class User implements UserInterface, TimestampableInterface
     use TimestampableTrait;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'string', unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, unique: true)]
     private ?string $identifiant = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $nom = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $prenoms = null;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Departement $departement = null;
 
     #[ORM\Column]
     private array $roles = [];
@@ -35,14 +47,18 @@ class User implements UserInterface, TimestampableInterface
     #[ORM\Column]
     private ?bool $isActive = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $lastConnection = null;
+
     #[ORM\PrePersist]
     public function prePersist(): void
     {
+        $this->setLastConnection(new \DateTime());
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -74,9 +90,11 @@ class User implements UserInterface, TimestampableInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $roles = array_merge(
+            $this->roles,
+            $this->getDepartement()->getRoles(),
+            ['ROLE_USER']
+        );
 
         return array_unique($roles);
     }
@@ -117,6 +135,54 @@ class User implements UserInterface, TimestampableInterface
     public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPrenoms(): ?string
+    {
+        return $this->prenoms;
+    }
+
+    public function setPrenoms(string $prenoms): self
+    {
+        $this->prenoms = $prenoms;
+
+        return $this;
+    }
+
+    public function getLastConnection(): ?\DateTimeInterface
+    {
+        return $this->lastConnection;
+    }
+
+    public function setLastConnection(\DateTimeInterface $lastConnection): self
+    {
+        $this->lastConnection = $lastConnection;
+
+        return $this;
+    }
+
+    public function getDepartement(): ?Departement
+    {
+        return $this->departement;
+    }
+
+    public function setDepartement(?Departement $departement): self
+    {
+        $this->departement = $departement;
 
         return $this;
     }

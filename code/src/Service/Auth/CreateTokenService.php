@@ -27,6 +27,9 @@ class CreateTokenService
             throw new \Exception('Utilisateur non actif');
         }
 
+        $user->setLastConnection(new \DateTime());
+        $this->userRepository->save($user);
+
         return $this->JWTManager->create($user);
     }
 }
