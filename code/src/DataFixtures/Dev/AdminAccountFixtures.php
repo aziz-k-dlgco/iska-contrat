@@ -13,7 +13,9 @@ class AdminAccountFixtures extends Fixture implements FixtureGroupInterface
     {
         $user = new User();
         $user->setEmail('admin@redoc.azk');
+        $user->setIdentifiant('admin');
         $user->setRoles(['ROLE_ADMIN']);
+        $user->setIsActive(false);
         $manager->persist($user);
 
         $manager->flush();

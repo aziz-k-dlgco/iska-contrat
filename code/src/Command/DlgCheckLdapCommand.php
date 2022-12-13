@@ -9,9 +9,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Ldap\Ldap;
 
 #[AsCommand(
-    name: 'dlg:check-ldap',
+    name: 'dlg:d',
     description: 'Check user exists in LDAP',
 )]
 class DlgCheckLdapCommand extends Command
@@ -26,29 +27,31 @@ class DlgCheckLdapCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        // dc=redoc,dc=azk
+        // domain azkam.lan
         $io = new SymfonyStyle($input, $output);
-        $enteredUsername = $input->getOption('username');
-        $ldap_bind_password = $input->getOption('password');
-        $ldap_server = 'ldap://monad:389';
-        $ldap_dn = "cn={$enteredUsername},dc=redoc,dc=azk";
+        $username = $input->getOption('username') . '@AZKAM';
+        $password = $input->getOption('password');
+        $ldap_server = '192.168.1.188';
 
         // Connexion au serveur LDAP
-        $ldap = ldap_connect($ldap_server);
-        //use ldap v3
-        ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
-        if ($ldap) {
-            // Connexion au serveur LDAP
-            $ldap_bind = ldap_bind($ldap, $ldap_dn, $ldap_bind_password);
-            if ($ldap_bind) {
-                $io->success("User {$enteredUsername} exists in LDAP");
-            } else {
-                $io->error("User {$enteredUsername} does not exist in LDAP");
-            }
-        } else {
-            $io->error("Unable to connect to LDAP server");
-        }
+        $ldap = Ldap::create('ext_ldap', [
+            'host' => $ldap_server,
+            'port' => 389,
+            'encryption' => 'none',
+            'options' => [
+                'protocol_version' => 3,
+                'referrals' => false,
+            ],
+        ]);
 
-        return Command::SUCCESS;
+        try{
+            $ldap->bind($username, $password);
+
+            $io->success('User exists in LDAP');
+            return Command::SUCCESS;
+        } catch (\Exception $e) {
+            $io->error('User does not exist in LDAP');
+            return Command::FAILURE;
+        }
     }
 }

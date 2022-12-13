@@ -2,6 +2,11 @@ up:
 	clear
 	make stop
 	docker-compose up -d
+	#Sleep for 3 seconds to allow the containers to start
+	echo "Containers are starting..."
+	sleep 3
+	docker-compose exec php-fpm composer run dev-base
+	make shell arg=php-fpm
 stop:
 	docker-compose stop
 	docker system prune -f

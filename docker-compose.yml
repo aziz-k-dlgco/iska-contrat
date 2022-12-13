@@ -6,9 +6,6 @@ services:
     mariadb:
         image: 'mariadb:10.6'
         working_dir: /application
-        volumes:
-            - './code:/application'
-            - './.docker/mysql/data:/var/lib/mysql'
         environment:
             - MYSQL_ROOT_PASSWORD=qwerty
             - MYSQL_DATABASE=iska_contrat
@@ -40,22 +37,12 @@ services:
     php-fpm:
         build: phpdocker/php-fpm
         working_dir: /application
+        #Wait for the database to be ready
+        depends_on:
+            - mariadb
         volumes:
             - './code:/application'
             - './phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/8.1/fpm/conf.d/99-overrides.ini'
-
-    # openldap-server with dc=redoc,dc=azk
-    monad:
-        image: osixia/openldap:latest
-        environment:
-            - LDAP_BASE_DN=dc=redoc,dc=azk
-            - LDAP_ORGANISATION=redoc
-            - LDAP_DOMAIN=redoc.azk
-            - LDAP_ADMIN_PASSWORD=qwerty
-            - LDAP_CONFIG_PASSWORD=qwerty
-        #Print admin username and password
-        command: --loglevel debug
-        volumes:
-            -   ./openldap-data:/var/lib/ldap
-            -   ./openldap-ldif:/root/ldif
-            -   ./openldap-config:/etc/ldap/slapd.d
+        #Bridge to host network
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
