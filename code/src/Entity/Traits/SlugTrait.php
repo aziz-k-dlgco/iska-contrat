@@ -4,10 +4,12 @@ namespace App\Entity\Traits;
 
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 // This trait is used to generate a slug from a string
 trait SlugTrait
 {
+    #[Groups(['read'])]
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
 

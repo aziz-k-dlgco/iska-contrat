@@ -14,4 +14,10 @@ class ZZController extends AbstractController
     {
         return $this->render('home/index.html.twig');
     }
+
+    #[Route('/{name}/{subpath}', name: 'app_no_route2', methods: ['GET'])]
+    public function index2(string $name): Response
+    {
+        return $this->render('home/index.html.twig');
+    }
 }

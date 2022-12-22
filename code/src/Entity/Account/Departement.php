@@ -40,9 +40,9 @@ class Departement implements TimestampableInterface
     #[ORM\PrePersist]
     public function prePersist(): void
     {
+        $this->setSlug($this->getNom());
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
-        $this->setSlug($this->getNom());
     }
 
     public function getId(): ?int
