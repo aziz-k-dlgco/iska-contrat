@@ -16,6 +16,8 @@ const ContratNewForm = () => {
   const [modeFacturation, setModeFacturation] = React.useState([]);
   const [modePaiement, setModePaiement] = React.useState([]);
   const [departement, setDepartement] = React.useState([]);
+  const [modeRenouvellement, setModeRenouvellement] = React.useState([]);
+  const [periodicitePaiement, setPeriodicitePaiement] = React.useState([]);
 
   const [objet, setObjet] = React.useState("");
   const {
@@ -35,7 +37,13 @@ const ContratNewForm = () => {
     getData("/contrat/type-contrat", (data) => setTypeContrat(data));
     getData("/contrat/mode-facturation", (data) => setModeFacturation(data));
     getData("/contrat/mode-paiement", (data) => setModePaiement(data));
+    getData("/contrat/mode-renouvellement", (data) =>
+      setModeRenouvellement(data)
+    );
     getData("/account/departement", (data) => setDepartement(data));
+    getData("/contrat/periodicite-paiement", (data) =>
+      setPeriodicitePaiement(data)
+    );
   }, []);
 
   return (
@@ -175,11 +183,7 @@ const ContratNewForm = () => {
             <InputDropdown
               name={"periodicite-paiement"}
               label={"Périodicité paiement"}
-              data={[
-                { value: "1", label: "Mensuel" },
-                { value: "2", label: "Trimestriel" },
-                { value: "3", label: "Semestriel", selected: true },
-              ]}
+              data={periodicitePaiement}
               isAnother={true}
               onChange={(e) => console.log(e.target.value)}
             />
@@ -203,10 +207,7 @@ const ContratNewForm = () => {
             <InputDropdown
               name={"mode-renouvellement"}
               label={"Mode de renouvellement"}
-              data={[
-                { value: "1", label: "Tacite reconduction" },
-                { value: "2", label: "Express" },
-              ]}
+              data={modeRenouvellement}
             />
           </div>
         </div>
