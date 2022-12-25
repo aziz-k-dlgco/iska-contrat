@@ -2,7 +2,10 @@
 
 namespace App\Controller\Contrat;
 
+use App\Entity\Account\User;
+use App\Entity\Contrat\ModeFacturation;
 use App\Entity\Contrat\ModeRenouvellement;
+use App\Service\Utils\SlugTraitToJson;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,23 +16,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class ModeRenouvellementController extends AbstractController
 {
     #[Route('/', name: 'app_contrat_mode_renouvellement_all', methods: ['GET'])]
-    public function all(EntityManagerInterface $manager): Response
+    public function all(SlugTraitToJson $slugTraitToJsonSrv): Response
     {
         try {
-            $modeRenouvellements = $manager->getRepository(ModeRenouvellement::class)->findAll();
-            return $this->json(
-                array_map(
-                    function (ModeRenouvellement $modeRenouvellement) {
-                        return [
-                            'value' => $modeRenouvellement->getId(),
-                            'label' => $modeRenouvellement->getLib(),
-                        ];
-                    }, $modeRenouvellements),
-                Response::HTTP_OK,
-                [
-                    'Cache-Control' => 'max-age=3600',
-                ],
-            );
+            /** @var User $user */
+            $user = $this->getUser();
+            return $slugTraitToJsonSrv($user, ModeRenouvellement::class);
         } catch (\Exception $e) {
             return $this->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

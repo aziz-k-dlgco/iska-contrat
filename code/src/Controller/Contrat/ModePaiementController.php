@@ -2,7 +2,10 @@
 
 namespace App\Controller\Contrat;
 
+use App\Entity\Account\User;
+use App\Entity\Contrat\ModeFacturation;
 use App\Entity\Contrat\ModePaiement;
+use App\Service\Utils\SlugTraitToJson;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,23 +16,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class ModePaiementController extends AbstractController
 {
     #[Route('/', name: 'app_contrat_mode_paiement_all', methods: ['GET'])]
-    public function all(EntityManagerInterface $manager): Response
+    public function all(SlugTraitToJson $slugTraitToJsonSrv): Response
     {
         try {
-            $modePaiements = $manager->getRepository(ModePaiement::class)->findAll();
-            return $this->json(
-                array_map(
-                    function (ModePaiement $modePaiement) {
-                        return [
-                            'value' => $modePaiement->getId(),
-                            'label' => $modePaiement->getLib(),
-                        ];
-                    }, $modePaiements),
-                Response::HTTP_OK,
-                [
-                    'Cache-Control' => 'max-age=3600',
-                ],
-            );
+            /** @var User $user */
+            $user = $this->getUser();
+            return $slugTraitToJsonSrv($user, ModePaiement::class);
         } catch (\Exception $e) {
             return $this->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

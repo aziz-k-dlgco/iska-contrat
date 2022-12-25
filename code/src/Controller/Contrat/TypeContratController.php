@@ -2,7 +2,10 @@
 
 namespace App\Controller\Contrat;
 
+use App\Entity\Account\User;
+use App\Entity\Contrat\ModeFacturation;
 use App\Entity\Contrat\TypeContrat;
+use App\Service\Utils\SlugTraitToJson;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,23 +16,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeContratController extends AbstractController
 {
     #[Route('/', name: 'app_contrat_type_contrat_all', methods: ['GET'])]
-    public function all(EntityManagerInterface $manager): Response
+    public function all(SlugTraitToJson $slugTraitToJsonSrv): Response
     {
         try {
-            $typeContrats = $manager->getRepository(TypeContrat::class)->findAll();
-            return $this->json(
-                array_map(
-                    function (TypeContrat $typeContrat) {
-                        return [
-                            'value' => $typeContrat->getId(),
-                            'label' => $typeContrat->getLib(),
-                        ];
-                    }, $typeContrats),
-                Response::HTTP_OK,
-                [
-                    'Cache-Control' => 'max-age=3600',
-                ],
-            );
+            /** @var User $user */
+            $user = $this->getUser();
+            return $slugTraitToJsonSrv($user, TypeContrat::class);
         } catch (\Exception $e) {
             return $this->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
