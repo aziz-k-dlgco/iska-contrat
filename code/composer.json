@@ -49,6 +49,7 @@
         "symfony/validator": "6.1.*",
         "symfony/web-link": "6.1.*",
         "symfony/webpack-encore-bundle": "^1.16",
+        "symfony/workflow": "6.1.*",
         "symfony/yaml": "6.1.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
@@ -110,6 +111,7 @@
             "php bin/console d:d:c",
             "php bin/console d:s:c",
             "php bin/console d:f:l --no-interaction --group=dev",
+            "php bin/console d:f:l --no-interaction --group=prod --append",
             "composer run-script auto-scripts"
         ]
     },
