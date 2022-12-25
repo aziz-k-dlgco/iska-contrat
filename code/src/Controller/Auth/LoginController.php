@@ -29,14 +29,12 @@ class LoginController extends AbstractController
 
             $user = $userRepository->findOneBy(['identifiant' => $username]);
             if (!$user) {
-                throw new \Exception('Utilisateur non trouvé');
+                throw new \Exception('Identifiant ou mot de passe incorrect');
             }
 
             //Check if user is in LDAP
             if (!$ldapAuthService($username, $password)) {
-                return $this->json([
-                    'message' => 'Identifiant ou mot de passe incorrect',
-                ], 401);
+                throw new \Exception('Identifiant ou mot de passe incorrect');
             }
 
             return $this->json([
@@ -44,6 +42,7 @@ class LoginController extends AbstractController
             ]);
         } catch (\Exception $e) {
             return $this->json([
+                'error' => true,
                 'message' => $e->getMessage()
             ], 401);
         }
