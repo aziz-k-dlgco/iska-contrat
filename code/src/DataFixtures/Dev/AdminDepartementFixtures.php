@@ -15,7 +15,6 @@ class AdminDepartementFixtures extends Fixture implements FixtureGroupInterface
     {
         $departement = new Departement();
         $departement->setNom('Admin');
-        $departement->setRoles(['ROLE_ADMIN']);
         $manager->persist($departement);
         $manager->flush();
 
