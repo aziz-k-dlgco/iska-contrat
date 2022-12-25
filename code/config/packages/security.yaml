@@ -5,7 +5,7 @@ security:
         app_user_provider:
             entity:
                 class: App\Entity\Account\User
-                property: identifiant
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -24,7 +24,7 @@ security:
 
     access_control:
         - { path: ^/auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:
