@@ -26,9 +26,6 @@ class Departement implements TimestampableInterface
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column]
-    private array $roles = [];
-
     #[ORM\OneToMany(mappedBy: 'departement', targetEntity: User::class)]
     private Collection $users;
 
@@ -58,18 +55,6 @@ class Departement implements TimestampableInterface
     public function setNom(string $nom): self
     {
         $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getRoles(): array
-    {
-        return $this->roles;
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
 
         return $this;
     }

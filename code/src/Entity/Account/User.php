@@ -58,6 +58,11 @@ class User implements UserInterface, TimestampableInterface
         $this->updatedAt = new \DateTimeImmutable();
     }
 
+    public function getLib(): string
+    {
+        return $this->getNom() . ' ' . $this->getPrenoms();
+    }
+
     public function getId(): ?string
     {
         return $this->id;
@@ -90,11 +95,9 @@ class User implements UserInterface, TimestampableInterface
      */
     public function getRoles(): array
     {
-        $roles = array_merge(
-            $this->roles,
-            $this->getDepartement()->getRoles(),
-            ['ROLE_USER']
-        );
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
