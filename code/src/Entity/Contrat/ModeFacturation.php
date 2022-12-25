@@ -20,7 +20,7 @@ class ModeFacturation implements TimestampableInterface
      */
     use TimestampableTrait, SlugTrait, StatutTrait;
     // Is all entities available to all users
-    private const IS_USER_LIMITED = true;
+    private const IS_USER_LIMITED = false;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
