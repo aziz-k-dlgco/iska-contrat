@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures\Dev;
 
-use App\DataFixtures\Prod\RolesFixtures;
+use App\DataFixtures\Account\RolesFixtures;
 use App\Entity\Account\Departement;
 use App\Entity\Account\Roles;
 use App\Entity\Account\User;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataFixtures\Prod;
+namespace App\DataFixtures\Account;
 
 use App\Entity\Account\Roles;
 use Doctrine\Bundle\FixturesBundle\Fixture;
