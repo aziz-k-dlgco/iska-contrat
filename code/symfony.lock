@@ -88,9 +88,6 @@
             "config/packages/sensio_framework_extra.yaml"
         ]
     },
-    "sonata-project/entity-audit-bundle": {
-        "version": "1.9.0"
-    },
     "symfony/console": {
         "version": "6.1",
         "recipe": {
