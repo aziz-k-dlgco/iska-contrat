@@ -48,8 +48,31 @@ class Contrat implements TimestampableInterface
     #[ORM\Column]
     private ?int $delaiDenonciationPreavis = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $currentState = null;
+
     #[ORM\OneToMany(mappedBy: 'contrats', targetEntity: Document::class)]
     private Collection $documents;
+
+    #[ORM\ManyToOne(inversedBy: 'contrats')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ModeFacturation $modeFacturation = null;
+
+    #[ORM\ManyToOne(inversedBy: 'contrats')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ModePaiement $modePaiement = null;
+
+    #[ORM\ManyToOne(inversedBy: 'contrats')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ModeRenouvellement $modeRenouvellement = null;
+
+    #[ORM\ManyToOne(inversedBy: 'contrats')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?PeriodicitePaiement $periodicitePaiement = null;
+
+    #[ORM\ManyToOne(inversedBy: 'contrats')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?TypeContrat $typeContrat = null;
 
     public function __construct()
     {
@@ -190,6 +213,78 @@ class Contrat implements TimestampableInterface
                 $document->setContrats(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getModeFacturation(): ?ModeFacturation
+    {
+        return $this->modeFacturation;
+    }
+
+    public function setModeFacturation(?ModeFacturation $modeFacturation): self
+    {
+        $this->modeFacturation = $modeFacturation;
+
+        return $this;
+    }
+
+    public function getModePaiement(): ?ModePaiement
+    {
+        return $this->modePaiement;
+    }
+
+    public function setModePaiement(?ModePaiement $modePaiement): self
+    {
+        $this->modePaiement = $modePaiement;
+
+        return $this;
+    }
+
+    public function getModeRenouvellement(): ?ModeRenouvellement
+    {
+        return $this->modeRenouvellement;
+    }
+
+    public function setModeRenouvellement(?ModeRenouvellement $modeRenouvellement): self
+    {
+        $this->modeRenouvellement = $modeRenouvellement;
+
+        return $this;
+    }
+
+    public function getPeriodicitePaiement(): ?PeriodicitePaiement
+    {
+        return $this->periodicitePaiement;
+    }
+
+    public function setPeriodicitePaiement(?PeriodicitePaiement $periodicitePaiement): self
+    {
+        $this->periodicitePaiement = $periodicitePaiement;
+
+        return $this;
+    }
+
+    public function getTypeContrat(): ?TypeContrat
+    {
+        return $this->typeContrat;
+    }
+
+    public function setTypeContrat(?TypeContrat $typeContrat): self
+    {
+        $this->typeContrat = $typeContrat;
+
+        return $this;
+    }
+
+    public function getCurrentState(): ?string
+    {
+        return $this->currentState;
+    }
+
+    public function setCurrentState(string $currentState): self
+    {
+        $this->currentState = $currentState;
 
         return $this;
     }
