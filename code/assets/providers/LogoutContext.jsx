@@ -16,6 +16,7 @@ export const LogoutProvider = ({ children }) => {
     setTimeout(() => {
       localStorage.removeItem("jwt-expired");
     }, 5000);
+    logoutHandler();
   };
 
   return (
