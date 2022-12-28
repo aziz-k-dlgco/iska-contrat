@@ -6,7 +6,7 @@ import InputText from "../Fields/InputText";
 import InputDropdown from "../Fields/InputDropdown";
 import Dropzone from "../../../Dropzone";
 import { DataProviderContext } from "../../../../providers/DataProvider";
-import Tooltip from "../../../Tooltip";
+import { create } from "../../../../repository/ContratRepository";
 import { JWTDataContext } from "../../../../providers/JWTDataContext";
 
 const ContratNewForm = () => {
@@ -19,13 +19,25 @@ const ContratNewForm = () => {
   const [modeRenouvellement, setModeRenouvellement] = React.useState([]);
   const [periodicitePaiement, setPeriodicitePaiement] = React.useState([]);
 
-  const [objet, setObjet] = React.useState("");
+  const [formValues, setFormValues] = React.useState({});
+
+  const setFormValue = (name, value) => {
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
+
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    create(formValues).then((response) => {
+      console.log(response);
+    });
+  };
 
   const decodeJWT = getJWT();
 
@@ -70,7 +82,7 @@ const ContratNewForm = () => {
               name={"objet"}
               label={"Objet du contrat"}
               placeholder={"Objet du contrat"}
-              onChange={(e) => setObjet(e.target.value)}
+              onChange={(e) => setFormValue("objet", e.target.value)}
             />
           </div>
           <div className="flex-1 flex flex-row gap-2">
@@ -80,7 +92,7 @@ const ContratNewForm = () => {
                 label={"Type de contrat"}
                 data={typeContrat}
                 isAnother={true}
-                onChange={(e) => console.log(e.target.value)}
+                onChange={(e) => setFormValue("type-contrat", e.target.value)}
               />
             </div>
             <div className="flex-1">
@@ -90,6 +102,7 @@ const ContratNewForm = () => {
                   name={"departement-initiateur"}
                   label={"Département Initiateur"}
                   data={departement}
+                  onChange={(e) => setFormValue("departement-initiateur", e)}
                 />
               ) : (
                 <InputText
@@ -109,6 +122,9 @@ const ContratNewForm = () => {
               name={"identite-cocontractant"}
               label={"Identité du co-contractant"}
               placeholder={"Identité du co-contractant"}
+              onChange={(e) =>
+                setFormValue("identite-cocontractant", e.target.value)
+              }
             />
           </div>
         </div>
@@ -123,9 +139,13 @@ const ContratNewForm = () => {
               Clauses particulières
             </label>
             <textarea
-              id="card-name"
+              id="clauses-particulieres"
               className="form-input w-full"
-              placeholder="Patrick"
+              placeholder="Clauses particulières"
+              rows="15"
+              onChange={(e) =>
+                setFormValue("clauses-particulieres", e.target.value)
+              }
             />
           </div>
         </div>
@@ -137,7 +157,11 @@ const ContratNewForm = () => {
             >
               Date d'entrée en vigueur
             </label>
-            <InputDate />
+            <InputDate
+              onChange={(e) =>
+                setFormValue("date-entree-vigueur", e.target.value)
+              }
+            />
           </div>
           <div className="flex-1">
             <label
@@ -146,26 +170,31 @@ const ContratNewForm = () => {
             >
               Date de fin de contrat
             </label>
-            <InputDate />
+            <InputDate
+              onChange={(e) => setFormValue("date-fin-contrat", e.target.value)}
+            />
           </div>
           <div className="flex-1">
             <InputDropdown
               name={"delai-denonciation"}
               label={"Délai de dénonciation ou de préavis"}
               data={[
-                { value: "1", label: "1 mois" },
-                { value: "2", label: "2 mois" },
-                { value: "3", label: "3 mois" },
-                { value: "4", label: "4 mois" },
-                { value: "5", label: "5 mois" },
-                { value: "6", label: "6 mois" },
-                { value: "7", label: "7 mois" },
-                { value: "8", label: "8 mois" },
-                { value: "9", label: "9 mois" },
-                { value: "10", label: "10 mois" },
-                { value: "11", label: "11 mois" },
-                { value: "12", label: "12 mois" },
+                { value: 1, label: "1 mois" },
+                { value: 2, label: "2 mois" },
+                { value: 3, label: "3 mois" },
+                { value: 4, label: "4 mois" },
+                { value: 5, label: "5 mois" },
+                { value: 6, label: "6 mois" },
+                { value: 7, label: "7 mois" },
+                { value: 8, label: "8 mois" },
+                { value: 9, label: "9 mois" },
+                { value: 10, label: "10 mois" },
+                { value: 11, label: "11 mois" },
+                { value: 12, label: "12 mois" },
               ]}
+              onChange={(e) =>
+                setFormValue("delai-denonciation", e.target.value)
+              }
             />
           </div>
         </div>
@@ -176,7 +205,7 @@ const ContratNewForm = () => {
               label={"Mode de facturation"}
               data={modeFacturation}
               isAnother={true}
-              onChange={(e) => console.log(e.target.value)}
+              onChange={(e) => setFormValue("mode-facturation", e.target.value)}
             />
           </div>
           <div className="flex-1">
@@ -185,7 +214,9 @@ const ContratNewForm = () => {
               label={"Périodicité paiement"}
               data={periodicitePaiement}
               isAnother={true}
-              onChange={(e) => console.log(e.target.value)}
+              onChange={(e) =>
+                setFormValue("periodicite-paiement", e.target.value)
+              }
             />
           </div>
           <div className="flex-1">
@@ -194,7 +225,7 @@ const ContratNewForm = () => {
               label={"Mode de paiement"}
               data={modePaiement}
               isAnother={true}
-              onChange={(e) => console.log(e.target.value)}
+              onChange={(e) => setFormValue("mode-paiement", e.target.value)}
             />
           </div>
         </div>
@@ -208,6 +239,9 @@ const ContratNewForm = () => {
               name={"mode-renouvellement"}
               label={"Mode de renouvellement"}
               data={modeRenouvellement}
+              onChange={(e) =>
+                setFormValue("mode-renouvellement", e.target.value)
+              }
             />
           </div>
         </div>
@@ -221,6 +255,9 @@ const ContratNewForm = () => {
               name={"objet-modification"}
               label={"Objet des conditions de modifications"}
               placeholder={"Objet des conditions de modifications"}
+              onChange={(e) =>
+                setFormValue("objet-modification", e.target.value)
+              }
             />
           </div>
         </div>
@@ -236,6 +273,10 @@ const ContratNewForm = () => {
               id="details-modification"
               className="form-input w-full"
               placeholder="Détails des conditions de modifications"
+              rows="15"
+              onChange={(e) =>
+                setFormValue("details-modification", e.target.value)
+              }
             />
           </div>
         </div>
@@ -248,8 +289,16 @@ const ContratNewForm = () => {
         <hr />
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <Dropzone />
+            <Dropzone onChange={(e) => setFormValue("pj", e)} />
           </div>
+        </div>
+        <div className="flex justify-end mt-5">
+          <button
+            type="submit"
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
+          >
+            Enregistrer
+          </button>
         </div>
       </form>
     </div>
