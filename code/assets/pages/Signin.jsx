@@ -2,8 +2,6 @@ import React from "react";
 import { Link, useHistory } from "react-router-dom";
 
 import AuthImage from "../images/auth-image.jpg";
-import AuthDecoration from "../images/auth-decoration.png";
-import Notification from "../components/Notification";
 import Banner2 from "../components/Banner2";
 
 function Signin() {
@@ -46,6 +44,7 @@ function Signin() {
           }, 7000);
         } else {
           localStorage.setItem("jwt", data.token);
+          localStorage.removeItem("jwt-expired");
           history.push("/");
         }
       });
