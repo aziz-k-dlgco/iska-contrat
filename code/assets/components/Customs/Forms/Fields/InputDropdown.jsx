@@ -4,11 +4,22 @@ function InputDropdown({ name, label, data, onChange, isAnother, disabled }) {
   const [selected, setSelected] = useState(null);
   const [otherValue, setOtherValue] = useState("");
   const inputRef = useRef(null);
+  const [options, setOptions] = useState([]);
 
   useEffect(() => {
-    if (data.length > 0) {
-      setSelected(data[0].value);
+    if (data) {
+      if (data.length > 0) {
+        setSelected(data[0].value);
+      }
+
+      setOptions(data);
+      if (isAnother) {
+        // Merge the "Other" option to the end of the list
+        setOptions([...data, { value: "Other", label: "Other" }]);
+      }
     }
+
+    console.log(options);
   }, [data]);
 
   useEffect(() => {
@@ -17,24 +28,24 @@ function InputDropdown({ name, label, data, onChange, isAnother, disabled }) {
     }
   }, [selected]);
 
+  useEffect(() => {
+    onChange({ target: { name, value: otherValue } });
+  }, [otherValue]);
+
+  useEffect(() => {
+    onChange({ target: { name, value: selected } });
+  }, [selected]);
+
   function handleChange(event) {
     const { value } = event.target;
     setSelected(value);
-    if (value === "other") {
+    if (value === "@@@") {
       setOtherValue("");
-    } else {
-      onChange(event);
     }
   }
 
   function handleOtherChange(event) {
     setOtherValue(event.target.value);
-    onChange(event);
-  }
-
-  let options = data;
-  if (isAnother) {
-    options = [...data, { value: "other", label: "Autre" }];
   }
 
   return (
@@ -49,7 +60,6 @@ function InputDropdown({ name, label, data, onChange, isAnother, disabled }) {
             disabled ? "bg-gray-200" : ""
           }`}
           onChange={handleChange}
-          value={selected}
           disabled={disabled}
         >
           {options.map((item, index) => (
@@ -59,7 +69,7 @@ function InputDropdown({ name, label, data, onChange, isAnother, disabled }) {
           ))}
         </select>
 
-        {selected === "other" && (
+        {selected === "@@@" && (
           <input
             ref={inputRef}
             type="text"
