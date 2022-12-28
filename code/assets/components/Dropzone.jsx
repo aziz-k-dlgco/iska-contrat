@@ -21,14 +21,7 @@ const focusedStyle = {
   borderColor: "#2196f3",
 };
 
-const thumbsContainer = {
-  display: "flex",
-  flexDirection: "col",
-  flexWrap: "wrap",
-  marginTop: 16,
-};
-
-export default function Dropzone(props) {
+export default function Dropzone({ onChange, ...props }) {
   useDropzone();
   const files_icons_url = "/images/icons/";
   const [files, setFiles] = useState([]);
@@ -55,15 +48,19 @@ export default function Dropzone(props) {
     [isFocused]
   );
 
-  const thumbs = files.map((file) => (
+  const thumbs = files.map((file, index) => (
     /*
     preview
     file icon on top of the file name
     cross to delete file
      */
-    <tr>
+    <tr key={index}>
       <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap w-px">
-        <img className="h-8 w-8 rounded-full object-cover" src={file.preview} />
+        <img
+          className="h-8 w-8 rounded-full object-cover"
+          src={file.preview}
+          alt=""
+        />
       </td>
       <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
         <div className="text-sm text-gray-900">{file.name}</div>
@@ -83,9 +80,14 @@ export default function Dropzone(props) {
   ));
 
   useEffect(() => {
-    // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
     return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
   }, []);
+
+  useEffect(() => {
+    if (files.length > 0) {
+      onChange(files);
+    }
+  }, [files]);
 
   return (
     <div className="container">
