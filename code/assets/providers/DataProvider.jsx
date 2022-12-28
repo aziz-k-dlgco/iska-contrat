@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { createContext } from "react";
+import { LogoutContext } from "./LogoutContext";
 
 const API_PREFIX = "/api";
 
@@ -7,6 +8,7 @@ export const DataProviderContext = createContext();
 
 export const DataProvider = ({ children }) => {
   const [dataStore, setDataStore] = React.useState({});
+  const { sessionExpiredHandler } = useContext(LogoutContext);
 
   // wait for fetch data from API, then give data to the callback
   const getData = async (dataUrl, callback) => {
@@ -15,6 +17,10 @@ export const DataProvider = ({ children }) => {
     const headers = jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {};
     const response = await fetch(`${API_PREFIX}${dataUrl}`, { headers });
     const data = await response.json();
+    console.log(data.code);
+    if (data.code === 401) {
+      sessionExpiredHandler();
+    }
     callback(data);
   };
 
