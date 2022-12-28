@@ -1,7 +1,7 @@
 import React from "react";
 import Flatpickr from "react-flatpickr";
 
-function InputDate() {
+function InputDate({ onChange }) {
   const options = {
     minDate: "2000-01-01",
     dateFormat: "j/m/Y",
@@ -15,6 +15,9 @@ function InputDate() {
   return (
     <div className="relative">
       <Flatpickr
+        onChange={(date) => {
+          onChange({ target: { value: date[0] } });
+        }}
         className="form-input pl-9 text-slate-500 hover:text-slate-600 font-medium focus:border-slate-300 w-full"
         options={options}
       />
