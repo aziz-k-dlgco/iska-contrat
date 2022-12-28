@@ -15,7 +15,7 @@ function InputDropdown({ name, label, data, onChange, isAnother, disabled }) {
       setOptions(data);
       if (isAnother) {
         // Merge the "Other" option to the end of the list
-        setOptions([...data, { value: "Other", label: "Other" }]);
+        setOptions([...data, { value: "@@@", label: "Autre" }]);
       }
     }
 
@@ -23,7 +23,7 @@ function InputDropdown({ name, label, data, onChange, isAnother, disabled }) {
   }, [data]);
 
   useEffect(() => {
-    if (selected === "other" && inputRef.current) {
+    if (selected === "@@@" && inputRef.current) {
       inputRef.current.focus();
     }
   }, [selected]);
