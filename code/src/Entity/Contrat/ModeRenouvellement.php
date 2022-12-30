@@ -18,9 +18,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class ModeRenouvellement implements TimestampableInterface
 {
     /**
-     * @uses TimestampableTrait, SlugTrait, StatutTrait
+     * @uses TimestampableTrait, StatutTrait
      */
-    use TimestampableTrait, SlugTrait, StatutTrait;
+    use TimestampableTrait, StatutTrait;
     // Is all entities available to all users
     private const IS_USER_LIMITED = true;
     #[ORM\Id]

@@ -2,11 +2,14 @@
 
 namespace App\Entity\Traits;
 
+use App\Entity\Account\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 trait StatutTrait
 {
+    use SlugTrait;
+
     #[Groups(['read'])]
     #[ORM\Column(length: 255)]
     private ?string $lib = null;
@@ -17,6 +20,9 @@ trait StatutTrait
 
     #[ORM\Column(length: 255)]
     private ?array $users = [];
+
+    #[ORM\Column(length: 255)]
+    private ?bool $isListable = true;
 
     /**
      * @return string|null
@@ -69,9 +75,9 @@ trait StatutTrait
         return $this;
     }
 
-    public function addUser($user): self
+    public function addUser(User $user): self
     {
-        $this->users[] = $user;
+        $this->users[] = $user->getId();
         return $this;
     }
 
@@ -79,8 +85,24 @@ trait StatutTrait
     {
         // remove entity in array of entities, compare with id
         $this->users = array_filter($this->users, function ($item) use ($user) {
-            return $item->getId() !== $user->getId();
+            return $item != $user->getId();
         });
         return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getIsListable(): ?bool
+    {
+        return $this->isListable;
+    }
+
+    /**
+     * @param bool|null $isListable
+     */
+    public function setIsListable(?bool $isListable): void
+    {
+        $this->isListable = $isListable;
     }
 }
