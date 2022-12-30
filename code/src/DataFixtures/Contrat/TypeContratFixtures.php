@@ -12,9 +12,10 @@ class TypeContratFixtures extends Fixture implements FixtureGroupInterface
     public function load(ObjectManager $manager): void
     {
         $types = [
-            'Construction', 'Maintenance', 'Presation / Servie', 'Transport de fonds',
+            'Construction', 'Maintenance', 'Prestation / Service', 'Transport de fonds',
             'Vente', 'Entretien / Nettoyage', "Demande d'autorisation", 'Bail',
-            'Construction', 'Accord de confidentialité'
+            'Construction', 'Accord de confidentialité',
+            'Non renseigné'
         ];
 
         foreach ($types as $type) {

@@ -12,7 +12,8 @@ class ModeRenouvellementFixtures extends Fixture implements FixtureGroupInterfac
     public function load(ObjectManager $manager): void
     {
         $data = [
-            'Tacite reconduction', 'Express'
+            'Tacite reconduction', 'Express',
+            'Non renseigné'
         ];
 
         foreach ($data as $modeRenouvellement) {

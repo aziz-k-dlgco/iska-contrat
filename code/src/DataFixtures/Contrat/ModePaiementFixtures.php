@@ -14,6 +14,7 @@ class ModePaiementFixtures extends Fixture implements FixtureGroupInterface
         $data = [
             'Paiement par chèque',
             'Paiement par virement',
+            'Non renseigné'
         ];
 
         foreach ($data as $item) {
