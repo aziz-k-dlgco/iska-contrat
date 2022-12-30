@@ -5367,3 +5367,5 @@ span.flatpickr-weekday{
     display: block;
   }
 }
+
+input[type='text']:focus { box-shadow: none; }
