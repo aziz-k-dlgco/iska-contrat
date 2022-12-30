@@ -16,7 +16,14 @@ function InputDate({ onChange }) {
     <div className="relative">
       <Flatpickr
         onChange={(date) => {
-          onChange({ target: { value: date[0] } });
+          let actualDate = date[0];
+          onChange({
+            target: {
+              value: `${actualDate.getDate()}/${
+                actualDate.getMonth() + 1
+              }/ ${actualDate.getFullYear()}`,
+            },
+          });
         }}
         className="form-input pl-9 text-slate-500 hover:text-slate-600 font-medium focus:border-slate-300 w-full"
         options={options}

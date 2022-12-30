@@ -17,7 +17,6 @@ export const DataProvider = ({ children }) => {
     const headers = jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {};
     const response = await fetch(`${API_PREFIX}${dataUrl}`, { headers });
     const data = await response.json();
-    console.log(data.code);
     if (data.code === 401) {
       sessionExpiredHandler();
     }

@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "../../partials/Sidebar";
 import Header from "../../partials/Header";
-import { Link } from "react-router-dom";
-import Card from "../../components/Customs/Card";
-import Table from "../../components/Customs/Table";
-import Dropzone from "../../components/Dropzone";
-import ContratNewForm from "../../components/Customs/Forms/Contrat/ContratNewForm";
+import ContratNewFormv2 from "../../components/Customs/Forms/Contrat/ContratNewFormv2";
 
 export default function ContratNew() {
   const title = "Nouvelle demande de contrat - Gestion Contractuelle";
@@ -32,7 +28,7 @@ export default function ContratNew() {
               </div>
             </div>
 
-            <ContratNewForm />
+            <ContratNewFormv2 />
           </div>
         </main>
       </div>

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 function InputDropdown({ name, label, data, onChange, isAnother, disabled }) {
   const [selected, setSelected] = useState(null);
+  const [defValue, setDefValue] = useState(null);
   const [otherValue, setOtherValue] = useState("");
   const inputRef = useRef(null);
   const [options, setOptions] = useState([]);
@@ -9,17 +10,15 @@ function InputDropdown({ name, label, data, onChange, isAnother, disabled }) {
   useEffect(() => {
     if (data) {
       if (data.length > 0) {
+        setOptions(data);
+        if (isAnother) {
+          // Merge the "Other" option to the end of the list
+          setOptions([...data, { value: "@@@", label: "Autre" }]);
+        }
+
         setSelected(data[0].value);
       }
-
-      setOptions(data);
-      if (isAnother) {
-        // Merge the "Other" option to the end of the list
-        setOptions([...data, { value: "@@@", label: "Autre" }]);
-      }
     }
-
-    console.log(options);
   }, [data]);
 
   useEffect(() => {
@@ -63,7 +62,8 @@ function InputDropdown({ name, label, data, onChange, isAnother, disabled }) {
           disabled={disabled}
         >
           {options.map((item, index) => (
-            <option key={index} value={item.value}>
+            // Add selected if first item
+            <option key={index} value={item.value} selected={index === 0}>
               {item.label}
             </option>
           ))}

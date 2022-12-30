@@ -1,65 +1,49 @@
 import React, { useContext, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import Flatpickr from "react-flatpickr";
-import InputDate from "../Fields/InputDate";
-import InputText from "../Fields/InputText";
-import InputDropdown from "../Fields/InputDropdown";
-import Dropzone from "../../../Dropzone";
-import { DataProviderContext } from "../../../../providers/DataProvider";
-import { create } from "../../../../repository/ContratRepository";
-import { JWTDataContext } from "../../../../providers/JWTDataContext";
 
-const ContratNewForm = () => {
+import { useForm } from "react-hook-form";
+import InputTextv2 from "../Fields/InputTextv2";
+import InputDropdownv2 from "../Fields/InputDropdownv2";
+import { DataProviderContext } from "../../../../providers/DataProvider";
+import { JWTDataContext } from "../../../../providers/JWTDataContext";
+import InputTextAreav2 from "../Fields/InputTextAreav2";
+import InputDatev2 from "../Fields/InputDatev2";
+import Dropzone from "../../../Dropzone";
+import { create } from "../../../../repository/ContratRepository";
+
+const ContratNewFormv2 = () => {
   const { getData } = useContext(DataProviderContext);
   const { getJWT } = useContext(JWTDataContext);
-  const [typeContrat, setTypeContrat] = React.useState([]);
-  const [modeFacturation, setModeFacturation] = React.useState([]);
-  const [modePaiement, setModePaiement] = React.useState([]);
-  const [departement, setDepartement] = React.useState([]);
-  const [modeRenouvellement, setModeRenouvellement] = React.useState([]);
-  const [periodicitePaiement, setPeriodicitePaiement] = React.useState([]);
-
-  const [formValues, setFormValues] = React.useState({});
-
-  const setFormValue = (name, value) => {
-    setFormValues({
-      ...formValues,
-      [name]: value,
-    });
-  };
-
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm();
+  const { handleSubmit, control } = useForm();
   const onSubmit = (data) => {
-    create(formValues).then((response) => {
+    create(data, files).then((response) => {
       console.log(response);
     });
   };
 
+  const [typeContrat, setTypeContrat] = React.useState([]);
+  const [departement, setDepartement] = React.useState([]);
+  const [modeFacturation, setModeFacturation] = React.useState([]);
+  const [periodicitePaiement, setPeriodicitePaiement] = React.useState([]);
+  const [modePaiement, setModePaiement] = React.useState([]);
+  const [modeRenouvellement, setModeRenouvellement] = React.useState([]);
+  const [files, setFiles] = React.useState([]);
   const decodeJWT = getJWT();
-
-  /*useEffect(() => {
-    console.log(objet);
-  }, [objet]);*/
 
   useEffect(() => {
     getData("/contrat/type-contrat", (data) => setTypeContrat(data));
+    getData("/account/departement", (data) => setDepartement(data));
     getData("/contrat/mode-facturation", (data) => setModeFacturation(data));
+    getData("/contrat/periodicite-paiement", (data) =>
+      setPeriodicitePaiement(data)
+    );
     getData("/contrat/mode-paiement", (data) => setModePaiement(data));
     getData("/contrat/mode-renouvellement", (data) =>
       setModeRenouvellement(data)
     );
-    getData("/account/departement", (data) => setDepartement(data));
-    getData("/contrat/periodicite-paiement", (data) =>
-      setPeriodicitePaiement(data)
-    );
   }, []);
 
   return (
-    <div className="bg-white p-5 shadow-lg rounded-sm border border-slate-200">
+    <div className="bg-white p-5 shadow-lg rounded-sm border border-slate-200 mb-5">
       <header className="mb-6">
         <h2 className="text-xl text-slate-800 mb-2">
           Initer une demande de contrat
@@ -78,37 +62,42 @@ const ContratNewForm = () => {
         <hr />
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <InputText
-              name={"objet"}
-              label={"Objet du contrat"}
-              placeholder={"Objet du contrat"}
-              onChange={(e) => setFormValue("objet", e.target.value)}
+            <InputTextv2
+              name="objet"
+              control={control}
+              disabled={false}
+              label="Objet du contrat"
+              placeholder="Objet du contrat"
+              defaultValue=""
             />
           </div>
           <div className="flex-1 flex flex-row gap-2">
             <div className="flex-1">
-              <InputDropdown
-                name={"type-contrat"}
-                label={"Type de contrat"}
+              <InputDropdownv2
+                name="type-contrat"
+                label="Type de contrat"
+                control={control}
+                disabled={false}
                 data={typeContrat}
                 isAnother={true}
-                onChange={(e) => setFormValue("type-contrat", e.target.value)}
               />
             </div>
             <div className="flex-1">
               {decodeJWT.role === "ROLE_USER_JURIDIQUE" ||
               decodeJWT.role === "ROLE_MANAGER_JURIDIQUE" ? (
-                <InputDropdown
-                  name={"departement-initiateur"}
-                  label={"Département Initiateur"}
+                <InputDropdownv2
+                  name="departement-initiateur"
+                  label="Département initiateur"
+                  control={control}
+                  disabled={false}
                   data={departement}
-                  onChange={(e) => setFormValue("departement-initiateur", e)}
+                  isAnother={false}
                 />
               ) : (
-                <InputText
-                  name={"departement-initiateur"}
-                  label={"Département Initiateur"}
-                  placeholder={"Identité du co-contractant"}
+                <InputTextv2
+                  name="departement-initiateur"
+                  label="Département initiateur"
+                  control={control}
                   defaultValue={decodeJWT.departement}
                   disabled={true}
                 />
@@ -118,13 +107,13 @@ const ContratNewForm = () => {
         </div>
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <InputText
+            <InputTextv2
               name={"identite-cocontractant"}
+              control={control}
+              disabled={false}
               label={"Identité du co-contractant"}
-              placeholder={"Identité du co-contractant"}
-              onChange={(e) =>
-                setFormValue("identite-cocontractant", e.target.value)
-              }
+              placeholder="Identité du co-contractant"
+              defaultValue=""
             />
           </div>
         </div>
@@ -132,52 +121,42 @@ const ContratNewForm = () => {
         <hr />
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <label
-              className="block text-sm font-medium mb-1"
-              htmlFor="clauses-particulieres"
-            >
-              Clauses particulières
-            </label>
-            <textarea
-              id="clauses-particulieres"
-              className="form-input w-full"
+            <InputTextAreav2
+              name="clauses-particulieres"
+              control={control}
+              disabled={false}
+              label="Clauses particulières"
               placeholder="Clauses particulières"
-              rows="15"
-              onChange={(e) =>
-                setFormValue("clauses-particulieres", e.target.value)
-              }
+              defaultValue=""
             />
           </div>
         </div>
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <label
-              className="block text-sm font-medium mb-1"
-              htmlFor="date-entree-vigueur"
-            >
-              Date d'entrée en vigueur
-            </label>
-            <InputDate
-              onChange={(e) =>
-                setFormValue("date-entree-vigueur", e.target.value)
-              }
+            <InputDatev2
+              name={"date-entree-vigueur"}
+              control={control}
+              disabled={false}
+              label="Date d'entrée en vigueur"
+              defaultValue={new Date()}
             />
           </div>
           <div className="flex-1">
-            <label
-              className="block text-sm font-medium mb-1"
-              htmlFor="date-fin-contrat"
-            >
-              Date de fin de contrat
-            </label>
-            <InputDate
-              onChange={(e) => setFormValue("date-fin-contrat", e.target.value)}
+            <InputDatev2
+              name={"date-fin-contrat"}
+              control={control}
+              disabled={false}
+              label="Date de fin de contrat"
+              defaultValue={new Date()}
             />
           </div>
           <div className="flex-1">
-            <InputDropdown
-              name={"delai-denonciation"}
-              label={"Délai de dénonciation ou de préavis"}
+            <InputDropdownv2
+              name="delai-denonciation"
+              label="Délai de dénonciation ou de préavis"
+              control={control}
+              disabled={false}
+              isAnother={false}
               data={[
                 { value: 1, label: "1 mois" },
                 { value: 2, label: "2 mois" },
@@ -192,60 +171,59 @@ const ContratNewForm = () => {
                 { value: 11, label: "11 mois" },
                 { value: 12, label: "12 mois" },
               ]}
-              onChange={(e) =>
-                setFormValue("delai-denonciation", e.target.value)
-              }
             />
           </div>
         </div>
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <InputDropdown
+            <InputDropdownv2
               name={"mode-facturation"}
               label={"Mode de facturation"}
+              control={control}
+              disabled={false}
               data={modeFacturation}
               isAnother={true}
-              onChange={(e) => setFormValue("mode-facturation", e.target.value)}
             />
           </div>
         </div>
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <InputDropdown
+            <InputDropdownv2
               name={"periodicite-paiement"}
               label={"Périodicité paiement"}
+              control={control}
+              disabled={false}
               data={periodicitePaiement}
               isAnother={true}
-              onChange={(e) =>
-                setFormValue("periodicite-paiement", e.target.value)
-              }
             />
           </div>
         </div>
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <InputDropdown
+            <InputDropdownv2
               name={"mode-paiement"}
               label={"Mode de paiement"}
+              control={control}
+              disabled={false}
               data={modePaiement}
               isAnother={true}
-              onChange={(e) => setFormValue("mode-paiement", e.target.value)}
             />
           </div>
         </div>
+
         <h2 className="text-xl text-slate-800 my-2">
           Conditions de renouvellement
         </h2>
         <hr />
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <InputDropdown
+            <InputDropdownv2
               name={"mode-renouvellement"}
               label={"Mode de renouvellement"}
+              control={control}
+              disabled={false}
               data={modeRenouvellement}
-              onChange={(e) =>
-                setFormValue("mode-renouvellement", e.target.value)
-              }
+              isAnother={false}
             />
           </div>
         </div>
@@ -255,37 +233,29 @@ const ContratNewForm = () => {
         <hr />
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <InputText
+            <InputTextv2
               name={"objet-modification"}
               label={"Objet des conditions de modifications"}
               placeholder={"Objet des conditions de modifications"}
-              onChange={(e) =>
-                setFormValue("objet-modification", e.target.value)
-              }
+              control={control}
+              disabled={false}
+              defaultValue=""
             />
           </div>
         </div>
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <label
-              className="block text-sm font-medium mb-1"
-              htmlFor="details-modification"
-            >
-              Détails des conditions de modifications
-            </label>
-            <textarea
-              id="details-modification"
-              className="form-input w-full"
+            <InputTextAreav2
+              name="details-modification"
+              control={control}
+              disabled={false}
+              label="Détails des conditions de modifications"
               placeholder="Détails des conditions de modifications"
-              rows="15"
-              onChange={(e) =>
-                setFormValue("details-modification", e.target.value)
-              }
+              defaultValue=""
             />
           </div>
         </div>
         <h2 className="text-xl text-slate-800 my-2">Pièces jointes</h2>
-
         <p>
           Nous vous recommandons de copier les fichiers dans un dossier pour
           pouvoir les sélectionner plus facilement.
@@ -293,7 +263,7 @@ const ContratNewForm = () => {
         <hr />
         <div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
           <div className="flex-1">
-            <Dropzone onChange={(e) => setFormValue("pj", e)} />
+            <Dropzone onChange={(e) => setFiles(e)} />
           </div>
         </div>
         <div className="flex justify-end mt-5">
@@ -309,4 +279,4 @@ const ContratNewForm = () => {
   );
 };
 
-export default ContratNewForm;
+export default ContratNewFormv2;

@@ -1,16 +1,16 @@
 import React from "react";
 import axios from "axios";
-const create = (data) => {
+const create = (data, files) => {
   let formData = new FormData();
   Object.keys(data).forEach((key) => {
     formData.append(key, data[key]);
   });
-  if (data["pj"]) {
-    data["pj"].forEach((pj, index) => {
-      formData.append("pj_" + index, pj);
+  if (files) {
+    Object.keys(files).forEach((key) => {
+      formData.append(key, files[key]);
     });
-    formData.delete("pj");
   }
+  console.log(formData);
   return axios.post("/api/contrat/new", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
