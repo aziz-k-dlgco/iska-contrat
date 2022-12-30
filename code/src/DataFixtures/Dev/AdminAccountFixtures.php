@@ -11,6 +11,8 @@ use Doctrine\Persistence\ObjectManager;
 
 class AdminAccountFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
+    const ADMIN_ACCOUNT_REFERENCE = 'admin-account';
+
     public function load(ObjectManager $manager): void
     {
         /**
@@ -28,6 +30,7 @@ class AdminAccountFixtures extends Fixture implements FixtureGroupInterface, Dep
         $manager->persist($user);
 
         $manager->flush();
+        $this->addReference(self::ADMIN_ACCOUNT_REFERENCE, $user);
     }
 
     public static function getGroups(): array
