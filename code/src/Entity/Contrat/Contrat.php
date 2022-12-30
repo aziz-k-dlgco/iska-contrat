@@ -4,7 +4,7 @@ namespace App\Entity\Contrat;
 
 use Andante\TimestampableBundle\Timestampable\TimestampableInterface;
 use Andante\TimestampableBundle\Timestampable\TimestampableTrait;
-use App\Entity\Traits\SlugTrait;
+use App\Entity\Traits\OwnedByTrait;
 use App\Repository\Contrat\ContratRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ContratRepository::class)]
 class Contrat implements TimestampableInterface
 {
-    use TimestampableTrait;
+    use TimestampableTrait, OwnedByTrait;
 
     #[ORM\Id]
     #[ORM\Column(type: 'string', unique: true)]
