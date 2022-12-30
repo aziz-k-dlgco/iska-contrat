@@ -17,16 +17,22 @@ class SlugTraitToJson
     {
         $data = $this->manager->getRepository($classToSearch)->findAll();
 
+        $filteredData = array_filter($data, function ($item) {
+            return $item->getLib() != 'Non renseigné';
+        });
+
+
         return new Response(
             json_encode(array_map(function ($item) {
                 return [
                     'value' => $item->getId(),
                     'label' => $item->getLib(),
                 ];
-            }, $data)), Response::HTTP_OK, [
+            }, $filteredData)), Response::HTTP_OK, [
                 'Content-Type' => 'application/json',
                 'Cache-Control' => 'max-age=3600',
             ]
         );
+
     }
 }
