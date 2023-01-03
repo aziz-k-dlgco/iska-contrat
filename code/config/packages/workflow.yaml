@@ -1,2 +1,139 @@
 framework:
-    workflows: null
+    workflows:
+        contract_request:
+            type: 'state_machine'
+            marking_store:
+                type: 'method'
+                property: 'currentState'
+            supports:
+                - App\Entity\Contrat\Contrat
+            initial_marking: 'created'
+            places:
+                created:
+                    metadata:
+                        label: 'Demande créée'
+                        color: 'blue'
+                pending_manager_approval:
+                    metadata:
+                        label: 'En attente de validation du manager'
+                        color: 'blue'
+                        permissions:
+                            owner:
+                                - 'edit'
+                                - 'delete'
+                            manager:
+                                - 'approve'
+                                - 'edit'
+                            manager_juridique:
+                                - 'none'
+                            user_juridique:
+                                - 'none'
+                pending_legal_department_manager_approval:
+                    metadata:
+                        label: 'En attente de validation du manager juridique'
+                        color: 'blue'
+                        permissions:
+                            owner:
+                                - 'none'
+                            manager:
+                                - 'none'
+                            manager_juridique:
+                                - 'approve'
+                                - 'edit'
+                                - 'transfer'
+                            user_juridique:
+                                - 'none'
+                pending_agent_approval:
+                    metadata:
+                        label: "En attente de validation de l'agent"
+                        color: 'blue'
+                        permissions:
+                            owner:
+                                - 'none'
+                            manager:
+                                - 'none'
+                            manager_juridique:
+                                - 'none'
+                            user_juridique:
+                                - 'approve'
+                                - 'edit'
+                approved:
+                    metadata:
+                        label: 'Validé'
+                        color: 'green'
+                        permissions:
+                            owner:
+                                - 'none'
+                            manager:
+                                - 'none'
+                            manager_juridique:
+                                - 'edit'
+                            user_juridique:
+                                - 'edit'
+                rejected_by_manager:
+                    metadata:
+                        label: 'Rejeté par le manager'
+                        color: 'red'
+                        permissions:
+                            owner:
+                                - 'none'
+                            manager:
+                                - 'none'
+                            manager_juridique:
+                                - 'none'
+                            user_juridique:
+                                - 'none'
+                rejected_by_legal_department_manager:
+                    metadata:
+                        label: 'Rejeté par le manager juridique'
+                        color: 'red'
+                        permissions:
+                            owner:
+                                - 'none'
+                            manager:
+                                - 'none'
+                            manager_juridique:
+                                - 'none'
+                            user_juridique:
+                                - 'none'
+                rejected_by_agent:
+                    metadata:
+                        label: "Rejeté par l'agent juridique"
+                        color: 'red'
+                        permissions:
+                            owner:
+                                - 'none'
+                            manager:
+                                - 'none'
+                            manager_juridique:
+                                - 'none'
+                            user_juridique:
+                                - 'none'
+            transitions:
+                submit:
+                    from: 'created'
+                    to: 'pending_manager_approval'
+                submit_by_juridique:
+                    from: 'created'
+                    to: 'approved'
+                approve_manager:
+                    from: 'pending_manager_approval'
+                    to: 'pending_legal_department_manager_approval'
+                approve_legal_department:
+                    from: 'pending_legal_department_manager_approval'
+                    to: 'approved'
+                reassign_to_agent:
+                    from: 'pending_legal_department_manager_approval'
+                    to: 'pending_agent_approval'
+                approve_agent:
+                    from: 'pending_agent_approval'
+                    to: 'approved'
+                reject_manager:
+                    from: 'pending_manager_approval'
+                    to: 'rejected_by_manager'
+                reject_legal_department:
+                    from: 'pending_legal_department_manager_approval'
+                    to: 'rejected_by_legal_department_manager'
+                reject_agent:
+                    from: 'pending_agent_approval'
+                    to: 'rejected_by_agent'
