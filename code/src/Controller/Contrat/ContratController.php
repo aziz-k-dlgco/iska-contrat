@@ -2,6 +2,8 @@
 
 namespace App\Controller\Contrat;
 
+use App\Entity\Account\User;
+use App\Service\Contrat\CreateContrat;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,14 +14,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class ContratController extends AbstractController
 {
     #[Route('/new', name: 'app_contrat_contrat_new', methods: ['POST'])]
-    public function new(Request $request): JsonResponse
+    public function new(Request $request, CreateContrat $createContratSrv): JsonResponse
     {
         try {
-            dump($request->request, gettype($request->request));
-            dump($request->files, gettype($request->files));
+            $createContratSrv($request->request->all(), $request->files->all());
             return new JsonResponse(['status' => 'ok']);
         } catch (\Exception $e) {
-            return new JsonResponse(['status' => 'Error', 'errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse([
+                'status' => 'Error',
+                'errors' => $e->getMessage(),
+                'stack' => $e->getTraceAsString()
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 }
