@@ -26,6 +26,12 @@ security:
         - { path: ^/auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
 
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_MANAGER: ROLE_USER
+        ROLE_USER_JURIDIQUE: ROLE_USER
+        ROLE_MANAGER_JURIDIQUE: ROLE_USER_JURIDIQUE
+
 when@test:
     security:
         password_hashers:
