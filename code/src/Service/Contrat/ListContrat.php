@@ -28,6 +28,7 @@ class ListContrat
                 $data =  array_map(fn(Contrat $contrat) => $contrat->toSimpleArray(), $this->contratRepository->listByOwnedBy($user));
                 // apply libContrat filter on currentState field
                 array_walk($data, fn(&$item) => $item['currentState'] = ($this->statusToLibContrat)($item['currentState']));
+                array_walk($data, fn(&$item) => $item['link'] = '/contrat/' . $item['id']);
             break;
         }
 

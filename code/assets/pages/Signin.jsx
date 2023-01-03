@@ -5,6 +5,7 @@ import AuthImage from "../images/auth-image.jpg";
 import Banner2 from "../components/Banner2";
 
 function Signin() {
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [identifiant, setIdentifiant] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState("");

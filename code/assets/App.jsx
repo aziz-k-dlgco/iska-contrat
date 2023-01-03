@@ -47,6 +47,7 @@ function App() {
         <RouteGuard exact path="/" component={Home} />
         <RouteGuard exact path="/contrat" component={ContratHome} />
         <RouteGuard exact path="/contrat/new" component={ContratNew} />
+        <RouteGuard exact path="/contrat/:id" component={ContratNew} />
       </Switch>
     </>
   );

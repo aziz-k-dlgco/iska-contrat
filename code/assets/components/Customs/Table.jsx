@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import TableBadge from "./TableBadge";
+import { Link } from "react-router-dom";
 
 // Data is passed to the table component from data prop
 export default function Table({ data }) {
@@ -244,9 +245,11 @@ export default function Table({ data }) {
                       ) : null;
                     })}
                     <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap w-px">
-                      <button className="btn border-slate-200 hover:border-slate-300 text-indigo-500">
-                        Consulter
-                      </button>
+                      <Link to={row.link}>
+                        <button className="btn border-slate-200 hover:border-slate-300 text-indigo-500">
+                          Consulter
+                        </button>
+                      </Link>
                     </td>
                   </tr>
                 );
