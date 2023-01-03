@@ -10,12 +10,16 @@ const create = (data, files) => {
       formData.append(key, files[key]);
     });
   }
-  console.log(formData);
-  return axios.post("/api/contrat/new", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-      Authorization: "Bearer " + localStorage.getItem("jwt"),
-    },
+
+  const token = localStorage.getItem("jwt");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  return fetch("/api/contrat/new", {
+    method: "POST",
+    headers: headers,
+    body: formData,
   });
 };
 

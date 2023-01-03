@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 
 import { useForm } from "react-hook-form";
+import { ToastContainer, toast } from "react-toastify";
 import InputTextv2 from "../Fields/InputTextv2";
 import InputDropdownv2 from "../Fields/InputDropdownv2";
 import { DataProviderContext } from "../../../../providers/DataProvider";
@@ -9,15 +10,25 @@ import InputTextAreav2 from "../Fields/InputTextAreav2";
 import InputDatev2 from "../Fields/InputDatev2";
 import Dropzone from "../../../Dropzone";
 import { create } from "../../../../repository/ContratRepository";
+import { LogoutContext } from "../../../../providers/LogoutContext";
+import { useHistory } from "react-router-dom";
 
 const ContratNewFormv2 = () => {
-  const { getData } = useContext(DataProviderContext);
+  const history = useHistory();
   const { getJWT } = useContext(JWTDataContext);
+  const { getData } = useContext(DataProviderContext);
+  const { sessionExpiredHandler } = useContext(LogoutContext);
   const { handleSubmit, control } = useForm();
   const onSubmit = (data) => {
-    create(data, files).then((response) => {
-      console.log(response);
-    });
+    create(data, files)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === "Expired JWT Token" && data.code === 401) {
+          sessionExpiredHandler();
+        }
+        toast.success("Contrat créé avec succès");
+        history.push("/contrat");
+      });
   };
 
   const [typeContrat, setTypeContrat] = React.useState([]);
@@ -84,7 +95,8 @@ const ContratNewFormv2 = () => {
             </div>
             <div className="flex-1">
               {decodeJWT.role === "ROLE_USER_JURIDIQUE" ||
-              decodeJWT.role === "ROLE_MANAGER_JURIDIQUE" ? (
+              decodeJWT.role === "ROLE_MANAGER_JURIDIQUE" ||
+              decodeJWT.role === "ROLE_ADMIN" ? (
                 <InputDropdownv2
                   name="departement-initiateur"
                   label="Département initiateur"

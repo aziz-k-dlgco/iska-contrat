@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { createContext } from "react";
 import { LogoutContext } from "./LogoutContext";
+import axios from "axios";
 
 const API_PREFIX = "/api";
 
@@ -23,19 +24,22 @@ export const DataProvider = ({ children }) => {
     callback(data);
   };
 
-  const postData = async (dataUrl, data) => {
-    // add jwt token to the request if it exists
-    const jwtToken = localStorage.getItem("jwt");
-    const headers = jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {};
-    // return the promise
-    return fetch(`${API_PREFIX}${dataUrl}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...headers,
-      },
-      body: JSON.stringify(data),
-    });
+  const postData = async (data, url) => {
+    const token = localStorage.getItem("jwt");
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    axios
+      .post(url, data, { headers })
+      .then((response) => response.data)
+      .catch((error) => {
+        console.log(error);
+        if (error.response.status === 401) {
+          sessionExpiredHandler();
+        } else {
+          // gérez tout autre type d'erreur ici
+        }
+      });
   };
 
   return (
