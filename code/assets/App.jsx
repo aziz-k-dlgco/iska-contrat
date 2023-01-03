@@ -5,9 +5,11 @@ import {
   useLocation,
   BrowserRouter as Router,
 } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 import "./css/style.css";
 import "flatpickr/dist/flatpickr.css";
+import "react-toastify/dist/ReactToastify.css";
 
 // Import pages
 import Home from "./pages/Home";
@@ -57,6 +59,16 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <JWTDataProvider>
           <Router>
             <App />
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              pauseOnFocusLoss
+              theme="light"
+              draggable={false}
+            />
           </Router>
         </JWTDataProvider>
       </DataProvider>
