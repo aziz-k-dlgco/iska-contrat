@@ -34,7 +34,8 @@ class ListContrat
         return [
             'title' => $title,
             'headers' => $this->getHeaders(),
-            'data' => $data
+            'data' => $data,
+            'filters' => $this->getFilters(),
         ];
     }
 
@@ -97,5 +98,10 @@ class ListContrat
                     'display' => false,
                 ],
             ];
+    }
+
+    private function getFilters()
+    {
+        return [];
     }
 }

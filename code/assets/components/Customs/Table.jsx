@@ -31,7 +31,6 @@ export default function Table({ data }) {
           setHeaders(data.headers);
           setSelectedFilters(data.filters);
           setCurrentItems(data.data.slice(indexOfFirstItem, indexOfLastItem));
-          console.log(data);
         }
       }
     }
@@ -172,7 +171,7 @@ export default function Table({ data }) {
             </div>
             {displayColumnsSelector && (
               <div
-                className="origin-top-right absolute right-0 mt-2 w-90 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                className="origin-top-right absolute right-0 mt-2 w-90 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="options-menu"
@@ -217,6 +216,9 @@ export default function Table({ data }) {
                     </th>
                   ) : null;
                 })}
+                <th className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                  Actions
+                </th>
               </tr>
             </thead>
             {/* Table body */}
@@ -241,6 +243,11 @@ export default function Table({ data }) {
                         </td>
                       ) : null;
                     })}
+                    <td className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap w-px">
+                      <button className="btn border-slate-200 hover:border-slate-300 text-indigo-500">
+                        Consulter
+                      </button>
+                    </td>
                   </tr>
                 );
               })}

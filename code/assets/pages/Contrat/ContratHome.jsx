@@ -15,7 +15,6 @@ function ContratHome() {
 
   useEffect(() => {
     findUserContrats().then((res) => {
-      console.log(res);
       setData(res);
     });
   }, []);

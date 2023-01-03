@@ -23,7 +23,6 @@ export default function TableBadge({ color, text }) {
     }
   }, [color]);
 
-  console.log(colorClass);
   return (
     <div
       className={`text-xs inline-flex font-medium ${colorClass} rounded-full text-center px-2.5 py-1`}
