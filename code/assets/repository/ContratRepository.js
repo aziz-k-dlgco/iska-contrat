@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios";
+
 const create = (data, files) => {
   let formData = new FormData();
   Object.keys(data).forEach((key) => {
@@ -23,4 +23,11 @@ const create = (data, files) => {
   });
 };
 
-export { create };
+const findUserContrats = async () => {
+  const jwtToken = localStorage.getItem("jwt");
+  const headers = jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {};
+  const response = await fetch("/api/contrat", { headers });
+  return await response.json();
+};
+
+export { create, findUserContrats };

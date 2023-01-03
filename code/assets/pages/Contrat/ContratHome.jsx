@@ -1,15 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Sidebar from "../../partials/Sidebar";
 import Header from "../../partials/Header";
 import Table from "../../components/Customs/Table";
 import Card from "../../components/Customs/Card";
 import { Link } from "react-router-dom";
+import { findUserContrats } from "../../repository/ContratRepository";
 
 function ContratHome() {
   const title = "Accueil - Gestion Contractuelle";
   document.title = title;
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    findUserContrats().then((res) => {
+      console.log(res);
+      setData(res);
+    });
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -70,7 +79,7 @@ function ContratHome() {
               <Card title={"Contrat"} value={"1"} />
               <Card title={"Contrat"} value={"1"} />
             </div>
-            <Table />
+            <Table data={data} />
           </div>
         </main>
       </div>

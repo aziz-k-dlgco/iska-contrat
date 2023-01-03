@@ -4,6 +4,7 @@ namespace App\Controller\Contrat;
 
 use App\Entity\Account\User;
 use App\Service\Contrat\CreateContrat;
+use App\Service\Contrat\ListContrat;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,19 @@ class ContratController extends AbstractController
                 'status' => 'Error',
                 'errors' => $e->getMessage(),
                 'stack' => $e->getTraceAsString()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    #[Route('/', name: 'app_contrat_contrat_list', methods: ['GET'])]
+    public function list(ListContrat $listContratSrv): JsonResponse
+    {
+        try {
+            return new JsonResponse(($listContratSrv)());
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'Error',
+                'errors' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
         }
     }

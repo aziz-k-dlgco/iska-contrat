@@ -16,7 +16,7 @@ framework:
                 pending_manager_approval:
                     metadata:
                         label: 'En attente de validation du manager'
-                        color: 'blue'
+                        color: 'default'
                         permissions:
                             owner:
                                 - 'edit'
@@ -31,7 +31,7 @@ framework:
                 pending_legal_department_manager_approval:
                     metadata:
                         label: 'En attente de validation du manager juridique'
-                        color: 'blue'
+                        color: 'primary'
                         permissions:
                             owner:
                                 - 'none'
@@ -46,7 +46,7 @@ framework:
                 pending_agent_approval:
                     metadata:
                         label: "En attente de validation de l'agent"
-                        color: 'blue'
+                        color: 'secondary'
                         permissions:
                             owner:
                                 - 'none'
@@ -60,7 +60,7 @@ framework:
                 approved:
                     metadata:
                         label: 'Validé'
-                        color: 'green'
+                        color: 'success'
                         permissions:
                             owner:
                                 - 'none'
@@ -73,7 +73,7 @@ framework:
                 rejected_by_manager:
                     metadata:
                         label: 'Rejeté par le manager'
-                        color: 'red'
+                        color: 'danger'
                         permissions:
                             owner:
                                 - 'none'
@@ -86,7 +86,7 @@ framework:
                 rejected_by_legal_department_manager:
                     metadata:
                         label: 'Rejeté par le manager juridique'
-                        color: 'red'
+                        color: 'danger'
                         permissions:
                             owner:
                                 - 'none'
@@ -99,7 +99,7 @@ framework:
                 rejected_by_agent:
                     metadata:
                         label: "Rejeté par l'agent juridique"
-                        color: 'red'
+                        color: 'danger'
                         permissions:
                             owner:
                                 - 'none'

@@ -58,7 +58,7 @@ class Contrat implements TimestampableInterface
     #[ORM\Column(length: 255)]
     private ?string $currentState = null;
 
-    #[ORM\OneToMany(mappedBy: 'contrats', targetEntity: Document::class)]
+    #[ORM\OneToMany(mappedBy: 'contrats', targetEntity: Document::class, cascade: ['persist'])]
     private Collection $documents;
 
     #[Versioned]
@@ -86,6 +86,25 @@ class Contrat implements TimestampableInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Departement $departementInitiateur = null;
 
+    public function toSimpleArray(){
+        return [
+            'id' => $this->getId(),
+            'object' => $this->getObjet(),
+            'ownedBy' => $this->getOwnedBy()->getLib(),
+            'identiteCocontractant' => $this->getIdentiteConcontractant(),
+            'dateEntreeVigueur' => $this->getDateEntreeVigueur()->format('d/m/Y'),
+            'dateFinContrat' => $this->getDateFinContrat()->format('d/m/Y'),
+            'delaiDenonciation' => $this->getDelaiDenonciationPreavis() . ' mois',
+            'currentState' => $this->getCurrentState(),
+            'modeFacturation' => $this->getModeFacturation()->getLib(),
+            'modePaiement' => $this->getModePaiement()->getLib(),
+            'modeRenouvellement' => $this->getModeRenouvellement()->getLib(),
+            'periodicitePaiement' => $this->getPeriodicitePaiement()->getLib(),
+            'typeContrat' => $this->getTypeContrat()->getLib(),
+            'departementInitiateur' => $this->getDepartementInitiateur()->getNom(),
+        ];
+    }
+
     public function __construct()
     {
         $this->documents = new ArrayCollection();
@@ -98,7 +117,7 @@ class Contrat implements TimestampableInterface
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }

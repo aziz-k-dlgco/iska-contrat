@@ -58,6 +58,11 @@ class User implements UserInterface, TimestampableInterface
         $this->updatedAt = new \DateTimeImmutable();
     }
 
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->roles);
+    }
+
     public function getLib(): string
     {
         return $this->getNom() . ' ' . $this->getPrenoms();

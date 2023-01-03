@@ -2,6 +2,7 @@
 
 namespace App\Repository\Contrat;
 
+use App\Entity\Account\User;
 use App\Entity\Contrat\Contrat;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -37,6 +38,16 @@ class ContratRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function listByOwnedBy(User $ownedBy): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.ownedBy = :ownedBy')
+            ->setParameter('ownedBy', $ownedBy)
+            ->getQuery()
+            ->getResult()
+        ;
     }
 
 //    /**
