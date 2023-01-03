@@ -4,13 +4,17 @@ namespace App\Entity\Contrat;
 
 use Andante\TimestampableBundle\Timestampable\TimestampableInterface;
 use Andante\TimestampableBundle\Timestampable\TimestampableTrait;
+use App\Entity\Account\Departement;
 use App\Entity\Traits\OwnedByTrait;
 use App\Repository\Contrat\ContratRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation\Loggable;
+use Gedmo\Mapping\Annotation\Versioned;
 
+#[Loggable]
 #[ORM\Table(name: '`t_contrat`')]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: ContratRepository::class)]
@@ -18,12 +22,15 @@ class Contrat implements TimestampableInterface
 {
     use TimestampableTrait, OwnedByTrait;
 
+    const CREATED = "created";
+    const DEFAULT_TEXT = "Non renseigné";
     #[ORM\Id]
     #[ORM\Column(type: 'string', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private $id = null;
 
+    #[Versioned]
     #[ORM\Column(length: 255)]
     private ?string $objet = null;
 
@@ -54,6 +61,7 @@ class Contrat implements TimestampableInterface
     #[ORM\OneToMany(mappedBy: 'contrats', targetEntity: Document::class)]
     private Collection $documents;
 
+    #[Versioned]
     #[ORM\ManyToOne(inversedBy: 'contrats')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ModeFacturation $modeFacturation = null;
@@ -73,6 +81,10 @@ class Contrat implements TimestampableInterface
     #[ORM\ManyToOne(inversedBy: 'contrats')]
     #[ORM\JoinColumn(nullable: false)]
     private ?TypeContrat $typeContrat = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Departement $departementInitiateur = null;
 
     public function __construct()
     {
@@ -98,7 +110,7 @@ class Contrat implements TimestampableInterface
 
     public function setObjet(string $objet): self
     {
-        $this->objet = $objet;
+        $this->objet = empty($objet) ? self::DEFAULT_TEXT : $objet;
 
         return $this;
     }
@@ -110,7 +122,7 @@ class Contrat implements TimestampableInterface
 
     public function setIdentiteConcontractant(string $identiteConcontractant): self
     {
-        $this->identiteConcontractant = $identiteConcontractant;
+        $this->identiteConcontractant = empty($identiteConcontractant) ? self::DEFAULT_TEXT : $identiteConcontractant;
 
         return $this;
     }
@@ -122,7 +134,7 @@ class Contrat implements TimestampableInterface
 
     public function setClausesParticulieres(string $clausesParticulieres): self
     {
-        $this->clausesParticulieres = $clausesParticulieres;
+        $this->clausesParticulieres = empty($clausesParticulieres) ? self::DEFAULT_TEXT : $clausesParticulieres;
 
         return $this;
     }
@@ -158,7 +170,7 @@ class Contrat implements TimestampableInterface
 
     public function setObjetConditionsModifications(string $objetConditionsModifications): self
     {
-        $this->objetConditionsModifications = $objetConditionsModifications;
+        $this->objetConditionsModifications = empty($objetConditionsModifications) ? self::DEFAULT_TEXT : $objetConditionsModifications;
 
         return $this;
     }
@@ -170,7 +182,7 @@ class Contrat implements TimestampableInterface
 
     public function setDetailsConditionsModifications(string $detailsConditionsModifications): self
     {
-        $this->detailsConditionsModifications = $detailsConditionsModifications;
+        $this->detailsConditionsModifications = empty($detailsConditionsModifications) ? self::DEFAULT_TEXT : $detailsConditionsModifications;
 
         return $this;
     }
@@ -285,6 +297,18 @@ class Contrat implements TimestampableInterface
     public function setCurrentState(string $currentState): self
     {
         $this->currentState = $currentState;
+
+        return $this;
+    }
+
+    public function getDepartementInitiateur(): ?Departement
+    {
+        return $this->departementInitiateur;
+    }
+
+    public function setDepartementInitiateur(?Departement $departementInitiateur): self
+    {
+        $this->departementInitiateur = $departementInitiateur;
 
         return $this;
     }
