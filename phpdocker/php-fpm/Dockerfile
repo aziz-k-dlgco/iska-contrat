@@ -4,6 +4,8 @@ WORKDIR "/application"
 RUN apt-get update; \
     apt-get -y --no-install-recommends install \
         git \
+        #install dot command \
+        graphviz \
         curl \
         ldap-utils \
         php8.1-ldap \
