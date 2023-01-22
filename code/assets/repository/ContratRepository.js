@@ -30,4 +30,11 @@ const findUserContrats = async () => {
   return await response.json();
 };
 
-export { create, findUserContrats };
+const findContrat = async (id) => {
+  const jwtToken = localStorage.getItem("jwt");
+  const headers = jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {};
+  const response = await fetch(`/api/contrat/infos/${id}`, { headers });
+  return await response.json();
+};
+
+export { create, findUserContrats, findContrat };

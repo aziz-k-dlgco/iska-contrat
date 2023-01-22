@@ -21,7 +21,7 @@ class ModePaiement implements TimestampableInterface
      * @uses TimestampableTrait, StatutTrait
      */
     use TimestampableTrait, StatutTrait;
-    // Is all entities available to all users
+    // Faux alors les entités ajoutés par l'utilisateur ne sont pas disponible pour tous les utilisateurs
     private const IS_USER_LIMITED = false;
     #[ORM\Id]
     #[ORM\GeneratedValue]

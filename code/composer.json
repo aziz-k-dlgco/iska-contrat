@@ -113,6 +113,7 @@
             "php bin/console d:d:c",
             "php bin/console d:s:c",
             "php bin/console d:f:l --no-interaction --group=dev",
+            "php bin/console lexik:jwt:generate-keypair --overwrite",
             "composer run-script auto-scripts"
         ]
     },

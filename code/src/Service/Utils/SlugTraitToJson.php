@@ -13,14 +13,26 @@ class SlugTraitToJson
     {
     }
 
-    public function __invoke($user, $classToSearch): Response
+    public function __invoke($user, $classToSearch, $giveArray = false, $removeDefault = false): Response|array
     {
         $data = $this->manager->getRepository($classToSearch)->findAll();
 
-        $filteredData = array_filter($data, function ($item) {
-            return $item->getLib() != 'Non renseigné';
-        });
+        if (!$removeDefault) {
+            $filteredData = array_filter($data, function ($item) {
+                return $item->getLib() != 'Non renseigné';
+            });
+        }else{
+            $filteredData = $data;
+        }
 
+        if ($giveArray) {
+            return array_map(function ($item) {
+                return [
+                    'value' => $item->getId(),
+                    'label' => $item->getLib(),
+                ];
+            }, $filteredData);
+        }
 
         return new Response(
             json_encode(array_map(function ($item) {
@@ -35,4 +47,5 @@ class SlugTraitToJson
         );
 
     }
+
 }

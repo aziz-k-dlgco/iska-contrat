@@ -13,7 +13,10 @@ function InputTextAreav2(props) {
     <>
       <label className="block text-sm font-medium mb-1">{props.label}</label>
       <textarea
-        style={styles}
+        style={{
+          resize: "none",
+          backgroundColor: props.disabled ? "rgb(229,231,235)" : "",
+        }}
         className="form-input w-full"
         placeholder={props.placeholder}
         disabled={props.disabled}

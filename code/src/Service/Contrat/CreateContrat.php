@@ -113,7 +113,7 @@ class CreateContrat
                 (new Document())
                     ->setFilename($newFilename)
                     ->setFiletype("")
-                ->setLocation($this->params->get('contrat_pj_directory') . '/' . $newFilename)
+                ->setLocation($this->params->get('contrat_pj_directory_client') . '/' . $newFilename)
             );
         }
         // Une demande de contrat initiée par un admin ou un membre du juridique devient automatiquement un contrat

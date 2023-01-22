@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 
 import AuthImage from "../images/auth-image.jpg";
 import Banner2 from "../components/Banner2";
+import { AuthContext } from "../providers/AuthContext";
 
 function Signin() {
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const [identifiant, setIdentifiant] = React.useState("");
+  const { Login } = useContext(AuthContext);
+  const [identifiant, setIdentifiant] = useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -16,39 +17,31 @@ function Signin() {
   //On mount change page title
   React.useEffect(() => {
     document.title = "Connexion - Iska Contrat";
-    // If user is already logged in, redirect to dashboard
-    localStorage.removeItem("jwt");
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    fetch("/auth", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const res = await Login(
+      identifiant,
+      password,
+      () => {
+        setLoading(true);
+        console.log("Logging in...");
       },
-      body: JSON.stringify({
-        username: identifiant,
-        password: password,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
+      () => {
+        console.log("Logged in!");
+        history.push("/");
+      },
+      (error) => {
+        setError(error);
+        console.log(error);
         setLoading(false);
-        if (data.error) {
-          //Display error for 7 seconds
-          setError(data.message);
-          setTimeout(() => {
-            setError("");
-          }, 7000);
-        } else {
-          localStorage.setItem("jwt", data.token);
-          localStorage.removeItem("jwt-expired");
-          history.push("/");
-        }
-      });
+        console.log("Error logging in!");
+      }
+    );
+    console.log(res);
   };
 
   return (

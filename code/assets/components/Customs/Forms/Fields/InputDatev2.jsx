@@ -37,6 +37,10 @@ function InputDatev2(props) {
       <label className="block text-sm font-medium mb-1">{props.label}</label>
       <div className="relative">
         <Flatpickr
+          style={{
+            backgroundColor: props.disabled ? "rgb(229,231,235)" : "",
+          }}
+          disabled={props.disabled}
           options={options}
           {...field}
           onChange={(date) => {
@@ -54,6 +58,11 @@ function InputDatev2(props) {
                 value: dateToString(actualDate),
               },
             });
+          }}
+          onOpen={(date) => {
+            if (props.disabled) {
+              return false;
+            }
           }}
           format="j/m/Y"
           className="form-input pl-9 text-slate-500 hover:text-slate-600 font-medium focus:border-slate-300 w-full"

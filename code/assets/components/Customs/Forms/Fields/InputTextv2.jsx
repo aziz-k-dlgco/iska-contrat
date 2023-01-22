@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Tooltip from "../../../Tooltip";
 import { useController } from "react-hook-form";
 
@@ -20,3 +20,5 @@ function InputTextv2(props) {
 }
 
 export default InputTextv2;
+
+// How to send default value from props

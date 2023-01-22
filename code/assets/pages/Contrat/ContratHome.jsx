@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import Sidebar from "../../partials/Sidebar";
 import Header from "../../partials/Header";
@@ -6,17 +6,25 @@ import Table from "../../components/Customs/Table";
 import Card from "../../components/Customs/Card";
 import { Link } from "react-router-dom";
 import { findUserContrats } from "../../repository/ContratRepository";
+import { ApiContext } from "../../providers/ApiContext";
 
 function ContratHome() {
+  const { Proxy } = useContext(ApiContext);
   const title = "Accueil - Gestion Contractuelle";
   document.title = title;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    findUserContrats().then((res) => {
-      setData(res);
-    });
+    Proxy()
+      .get("/api/contrat")
+      .then((res) => {
+        console.log(res.data);
+        setData(res.data);
+      })
+      .catch((err) => {
+        //console.log(err);
+      });
   }, []);
 
   return (

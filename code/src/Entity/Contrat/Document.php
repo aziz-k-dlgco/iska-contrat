@@ -24,6 +24,16 @@ class Document implements TimestampableInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Contrat $contrat = null;
 
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getFilename(),
+            'link' => $this->getLocation(),
+            'createdAt' => $this->getCreatedAt(),
+        ];
+    }
+
     public function getId(): ?int
     {
         return $this->id;

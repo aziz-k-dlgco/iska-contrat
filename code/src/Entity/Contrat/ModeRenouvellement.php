@@ -21,7 +21,7 @@ class ModeRenouvellement implements TimestampableInterface
      * @uses TimestampableTrait, StatutTrait
      */
     use TimestampableTrait, StatutTrait;
-    // Is all entities available to all users
+    // Toutes les entités ajoutés par l'utilisateur sont disponible pour tous les utilisateurs
     private const IS_USER_LIMITED = true;
     #[ORM\Id]
     #[ORM\GeneratedValue]

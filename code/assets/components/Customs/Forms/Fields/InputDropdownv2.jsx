@@ -11,9 +11,17 @@ function InputDropdownv2(props) {
   useEffect(() => {
     if (props.data) {
       if (props.data.length > 0) {
+        const selectedOption = props.data.find(
+          (option) => option.selected === true
+        );
         setOptions(props.data);
-        setValue(props.data[0]);
-        field.onChange(props.data[0].value);
+        if (selectedOption) {
+          setValue(selectedOption);
+          field.onChange(selectedOption.value);
+        } else if (props.data.length > 0) {
+          setValue(props.data[0]);
+          field.onChange(props.data[0].value);
+        }
       }
     }
   }, [props.data]);
