@@ -1,6 +1,26 @@
 framework:
     workflows:
-        contract_request:
+        # State machine pour les demandes de contrat
+        # Les états sont :
+        # - created : la demande a été créée
+        # - pending_manager_approval : la demande est en attente de validation du manager
+        # - pending_legal_department_manager_approval : la demande est en attente de validation du manager juridique
+        # - pending_agent_approval : la demande est en attente de validation de l'agent juridique
+        # - approved : la demande est validée
+        # - rejected_by_manager : la demande a été rejetée par le manager
+        # - rejected_by_legal_department_manager : la demande a été rejetée par le manager juridique
+        # - rejected_by_agent : la demande a été rejetée par l'agent juridique
+        # Pour les permissions, on a :
+        # - owner : le propriétaire de la demande
+        # - manager : le manager de l'agent
+        # - manager_juridique : le manager juridique
+        # - user_juridique : l'agent juridique
+        # Pour chaque état, on a :
+        # - edit : permet de modifier la demande
+        # - remove : permet de supprimer la demande
+        # - approve : permet de valider la demande
+        # - approve_manager : permet de transférer la demande au manager juridique
+        # - transfer : permet de transférer la demande à un autre agent juridique pour validation
             type: 'state_machine'
             marking_store:
                 type: 'method'
@@ -19,11 +39,11 @@ framework:
                         color: 'default'
                         permissions:
                             owner:
-                                - 'edit'
-                                - 'delete'
+                                edit: true
+                                remove: true
                             manager:
-                                - 'approve'
-                                - 'edit'
+                                approve_manager: true
+                                edit: true
                             manager_juridique:
                                 - 'none'
                             user_juridique:
@@ -38,9 +58,9 @@ framework:
                             manager:
                                 - 'none'
                             manager_juridique:
-                                - 'approve'
-                                - 'edit'
-                                - 'transfer'
+                                approve: true
+                                edit: true
+                                transfer: true
                             user_juridique:
                                 - 'none'
                 pending_agent_approval:
@@ -55,8 +75,8 @@ framework:
                             manager_juridique:
                                 - 'none'
                             user_juridique:
-                                - 'approve'
-                                - 'edit'
+                                approve: true
+                                edit: true
                 approved:
                     metadata:
                         label: 'Validé'
@@ -67,9 +87,9 @@ framework:
                             manager:
                                 - 'none'
                             manager_juridique:
-                                - 'edit'
+                                edit: true
                             user_juridique:
-                                - 'edit'
+                                edit: true
                 rejected_by_manager:
                     metadata:
                         label: 'Rejeté par le manager'

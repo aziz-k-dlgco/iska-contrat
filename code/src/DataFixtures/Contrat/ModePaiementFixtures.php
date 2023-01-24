@@ -20,6 +20,7 @@ class ModePaiementFixtures extends Fixture implements FixtureGroupInterface
         foreach ($data as $item) {
             $modePaiement = new ModePaiement();
             $modePaiement->setLib($item);
+            $modePaiement->setIsListable(true);
             $manager->persist($modePaiement);
         }
 

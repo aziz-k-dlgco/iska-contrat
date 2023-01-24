@@ -24,7 +24,7 @@ class ModeFacturationFixtures extends Fixture implements FixtureGroupInterface, 
         foreach ($data as $key => $value) {
             $modeFacturation = new ModeFacturation();
             $modeFacturation->setLib($value);
-            //$modeFacturation->addUser($this->getReference(AdminAccountFixtures::ADMIN_ACCOUNT_REFERENCE));
+            $modeFacturation->setIsListable(true);
             $manager->persist($modeFacturation);
             $this->addReference('modeFacturation' . $key, $modeFacturation);
         }

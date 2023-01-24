@@ -19,6 +19,7 @@ class ModeRenouvellementFixtures extends Fixture implements FixtureGroupInterfac
         foreach ($data as $modeRenouvellement) {
             $modeRenouvellementE = new ModeRenouvellement();
             $modeRenouvellementE->setLib($modeRenouvellement);
+            $modeRenouvellementE->setIsListable(true);
             $manager->persist($modeRenouvellementE);
         }
 

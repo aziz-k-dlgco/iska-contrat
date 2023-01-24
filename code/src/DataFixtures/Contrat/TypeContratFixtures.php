@@ -21,6 +21,7 @@ class TypeContratFixtures extends Fixture implements FixtureGroupInterface
         foreach ($types as $type) {
             $typeContrat = new TypeContrat();
             $typeContrat->setLib($type);
+            $typeContrat->setIsListable(true);
             $manager->persist($typeContrat);
         }
 

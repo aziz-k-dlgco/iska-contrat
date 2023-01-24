@@ -16,6 +16,7 @@ class PeriodicitePaiementFixtures extends Fixture implements FixtureGroupInterfa
         foreach ($data as $periodicite) {
             $periodiciteE = new PeriodicitePaiement();
             $periodiciteE->setLib($periodicite);
+            $periodiciteE->setIsListable(true);
             $manager->persist($periodiciteE);
         }
 

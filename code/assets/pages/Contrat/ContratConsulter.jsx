@@ -475,24 +475,25 @@ const ContratAction = ({ id, data, edit, setEdit, getFormValues }) => {
 					</>
 				))}
 			{data.possible_actions.pending_manager_approval === true && (
-				<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
-					Transmettre au département juridique
-				</button>
-			)}
-			{data.possible_actions.pending_legal_department_manager_approval ===
-				true && (
 				<>
+					<hr className="my-1 border-t border-slate-200" />
 					<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
-						Affecter la demande de contrat à un agent
-					</button>
-					<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
-						Valider la demande de contrat
+						Transmettre au département juridique
 					</button>
 				</>
 			)}
 			{data.possible_actions.pending_legal_department_manager_approval ===
 				true && (
 				<>
+					<hr className="my-1 border-t border-slate-200" />
+					<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
+						Affecter la demande de contrat à un agent
+					</button>
+				</>
+			)}
+			{data.possible_actions.pending_agent_approval === true && (
+				<>
+					<hr className="my-1 border-t border-slate-200" />
 					<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
 						Valider la demande de contrat
 					</button>
