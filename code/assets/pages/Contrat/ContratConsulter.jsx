@@ -1,34 +1,44 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import Sidebar from '../../partials/Sidebar';
 import Header from '../../partials/Header';
-import { useController, useForm } from 'react-hook-form';
-import { create, findContrat } from '../../repository/ContratRepository';
+import { useForm } from 'react-hook-form';
 import InputTextv2 from '../../components/Customs/Forms/Fields/InputTextv2';
 import InputDropdownv2 from '../../components/Customs/Forms/Fields/InputDropdownv2';
 import InputTextAreav2 from '../../components/Customs/Forms/Fields/InputTextAreav2';
 import InputDatev2 from '../../components/Customs/Forms/Fields/InputDatev2';
-import Dropzone from '../../components/Customs/Dropzone';
-import { DataProviderContext } from '../../providers/DataProvider';
-import { JWTDataContext } from '../../providers/JWTDataContext';
-import { AuthContext } from '../../providers/AuthContext';
 import DisplayDocuments from '../../components/Customs/DisplayDocuments';
+import { ApiContext } from '../../providers/ApiContext';
+import cx from 'classnames';
+import loaderSVG from '../../misc/loader.svg';
+import { toast } from 'react-toastify';
 
 export default function ContratConsulter() {
+	const history = useHistory();
+	const { Proxy } = useContext(ApiContext);
 	const params = useParams();
 	const title = 'Consulter un contrat - Gestion Contractuelle';
 	// Tableau des permissions
-	const [perms, setPerms] = useState([]);
+	const [edit, setEdit] = useState(true);
 	const [contrat, setContrat] = useState(null);
 	const [show, setShow] = useState(false);
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 
+	const sendData = (data) => {};
+
 	useEffect(() => {
-		findContrat(params.id).then((data) => {
-			setContrat(data);
-			setShow(true);
-			document.title = title;
-		});
+		Proxy()
+			.get(`/api/contrat/infos/${params.id}`)
+			.then((response) => {
+				setContrat(response.data);
+				setShow(true);
+				document.title = title;
+			})
+			.catch((error) => {
+				if (error.response.data.errors === 'Contrat not found') {
+					history.push('/404');
+				}
+			});
 	}, []);
 
 	return (
@@ -56,8 +66,21 @@ export default function ContratConsulter() {
 								</h1>
 							</div>
 						</div>
-
-						{show && <ContratConsult data={contrat} />}
+						{/* Two cols one at 60%, the other at 40% */}
+						{show ? (
+							<ContratConsult
+								data={contrat}
+								editForm={edit}
+								setEdit={setEdit}
+							/>
+						) : (
+							<>
+								{/* Center loader horizontally and vertically */}
+								<div className="flex flex-col items-center justify-center h-full">
+									<img src={loaderSVG} alt="Loading..." />
+								</div>
+							</>
+						)}
 					</div>
 				</main>
 			</div>
@@ -65,9 +88,8 @@ export default function ContratConsulter() {
 	);
 }
 
-const ContratConsult = ({ data }) => {
-	const [editForm, setEditForm] = useState(true);
-	const { register, control, handleSubmit, errors } = useForm({
+const ContratConsult = ({ data, editForm, setEdit }) => {
+	const { register, control, handleSubmit, errors, getValues } = useForm({
 		defaultValues: {
 			objet: data.object,
 			'type-contrat': data.typeContrat,
@@ -86,6 +108,19 @@ const ContratConsult = ({ data }) => {
 		}
 	});
 
+	function getTableDelaiDenonciation() {
+		let finalData = [];
+		for (let i = 0; i < 12; i++) {
+			finalData.push({
+				value: i,
+				label: i + ' mois',
+				selected: data.delaiDenonciation === i + ' mois'
+			});
+		}
+		return finalData;
+	}
+
+	// event prevent default and log data
 	const onSubmit = (data) => {
 		console.log(data);
 	};
@@ -96,222 +131,376 @@ const ContratConsult = ({ data }) => {
 
 	return (
 		<>
-			<div className="bg-white p-5 shadow-lg rounded-sm border border-slate-200 mb-5">
-				<header className="mb-6">
-					<h2 className="text-xl text-slate-800 mb-2">
-						Lorem ipsum.
-					</h2>
-					<p>Lorem ipsum.</p>
+			<div className="flex flex-col md:flex-row w-full">
+				<div className="w-5/6 md:w-2/3">
+					<div className="bg-white p-5 shadow-lg rounded-sm border border-slate-200 mb-5">
+						<hr className="my-6 border-t border-slate-200" />
+						<form onSubmit={handleSubmit(onSubmit)}>
+							<h2 className="text-xl text-slate-800 mb-2">
+								Identification du contrat
+							</h2>
+							<hr />
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<InputTextv2
+										name="objet"
+										control={control}
+										disabled={editForm}
+										label="Objet du contrat"
+										placeholder="Objet du contrat"
+										defaultValue=""
+									/>
+								</div>
+								<div className="flex-1 flex flex-row gap-2">
+									<div className="flex-1">
+										<InputDropdownv2
+											name="type-contrat"
+											label="Type de contrat"
+											control={control}
+											disabled={editForm}
+											data={data.typeContrat}
+											isAnother={true}
+										/>
+									</div>
+									<div className="flex-1">
+										<InputDropdownv2
+											name="departement-initiateur"
+											label="Département initiateur"
+											control={control}
+											disabled={true}
+											data={data.departementInitiateur}
+											isAnother={false}
+										/>
+									</div>
+								</div>
+							</div>
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<InputTextv2
+										name={'identite-cocontractant'}
+										control={control}
+										disabled={editForm}
+										label={'Identité du co-contractant'}
+										placeholder="Identité du co-contractant"
+										defaultValue=""
+									/>
+								</div>
+							</div>
+							<h2 className="text-xl text-slate-800 my-2">
+								Conditions du contrat
+							</h2>
+							<hr />
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<InputTextAreav2
+										name="clauses-particulieres"
+										control={control}
+										disabled={editForm}
+										label="Clauses particulières"
+										placeholder="Clauses particulières"
+										defaultValue=""
+									/>
+								</div>
+							</div>
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<InputDatev2
+										name={'date-entree-vigueur'}
+										control={control}
+										disabled={editForm}
+										label="Date d'entrée en vigueur"
+										defaultValue={new Date()}
+									/>
+								</div>
+								<div className="flex-1">
+									<InputDatev2
+										name={'date-fin-contrat'}
+										control={control}
+										disabled={editForm}
+										label="Date de fin de contrat"
+										defaultValue={new Date()}
+									/>
+								</div>
+								<div className="flex-1">
+									<InputDropdownv2
+										name="delai-denonciation"
+										label="Délai de dénonciation ou de préavis"
+										control={control}
+										disabled={editForm}
+										isAnother={false}
+										data={getTableDelaiDenonciation()}
+									/>
+								</div>
+							</div>
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<InputDropdownv2
+										name={'mode-facturation'}
+										label={'Mode de facturation'}
+										control={control}
+										disabled={editForm}
+										data={data.modeFacturation}
+										isAnother={true}
+									/>
+								</div>
+							</div>
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<InputDropdownv2
+										name={'periodicite-paiement'}
+										label={'Périodicité paiement'}
+										control={control}
+										disabled={editForm}
+										data={data.periodicitePaiement}
+										isAnother={true}
+									/>
+								</div>
+							</div>
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<InputDropdownv2
+										name={'mode-paiement'}
+										label={'Mode de paiement'}
+										control={control}
+										disabled={editForm}
+										data={data.modePaiement}
+										isAnother={true}
+									/>
+								</div>
+							</div>
+
+							<h2 className="text-xl text-slate-800 my-2">
+								Conditions de renouvellement
+							</h2>
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<InputDropdownv2
+										name={'mode-renouvellement'}
+										label={'Mode de renouvellement'}
+										control={control}
+										disabled={editForm}
+										data={data.modeRenouvellement}
+										isAnother={false}
+									/>
+								</div>
+							</div>
+
+							<h2 className="text-xl text-slate-800 my-2">
+								Conditions de modification
+							</h2>
+							<hr />
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<InputTextv2
+										name={'objet-modification'}
+										label={
+											'Objet des conditions de modifications'
+										}
+										placeholder={
+											'Objet des conditions de modifications'
+										}
+										control={control}
+										disabled={editForm}
+										defaultValue=""
+									/>
+								</div>
+							</div>
+
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<InputTextAreav2
+										name="details-modification"
+										control={control}
+										disabled={editForm}
+										label="Détails des conditions de modifications"
+										placeholder="Détails des conditions de modifications"
+										defaultValue=""
+									/>
+								</div>
+							</div>
+
+							<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
+								<div className="flex-1">
+									<DisplayDocuments
+										documents={data.documents}
+									/>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div className="w-1/2 md:w-1/3">
+					<ContratAction
+						id={data.id}
+						data={data.perms}
+						edit={editForm}
+						setEdit={setEdit}
+						getFormValues={getValues}
+					/>
+				</div>
+			</div>
+		</>
+	);
+};
+
+const ContratAction = ({ id, data, edit, setEdit, getFormValues }) => {
+	// Rediriger à l'accueil après une opération
+	const history = useHistory();
+	const { Proxy } = useContext(ApiContext);
+	const [editLoading, setEditLoading] = useState(false);
+
+	const defaultValues = {
+		crud_actions: {
+			edit: false,
+			remove: false
+		},
+		possible_actions: {
+			pending_agent_approval: false,
+			pending_legal_department_manager_approval: false,
+			pending_manager_approval: false
+		}
+	};
+
+	const updateContrat = async (values) => {
+		Proxy()
+			.put(`/api/contrat/${id}`, values)
+			.then((res) => {
+				console.log(res);
+				setEditLoading(false);
+				setEdit(false);
+				toast.success({
+					title: 'Contrat mis à jour'
+				});
+				history.push('/contrat');
+			})
+			.catch((err) => {
+				console.log(err);
+				setEditLoading(false);
+				setEdit(false);
+				toast.error({
+					title: 'Erreur lors de la mise à jour du contrat',
+					description: err.response.data.errors
+				});
+			});
+	};
+
+	return (
+		<div className="bg-white p-5 shadow-lg rounded-sm border border-slate-200 mb-5 w-full h-80">
+			{/* Block Historique */}
+			<h2 className="text-xl text-slate-800 mb-2">Historique</h2>
+			<hr className="my-6 border-t border-slate-200" />
+			<div className="space-y-3">
+				<div className="place-content-center">
+					<div className="inline-flex flex-col min-w-full px-4 py-2 rounded-sm text-sm bg-white shadow-lg border border-slate-200 text-slate-600">
+						<div className="flex w-full justify-between items-start">
+							<div className="flex">
+								<div>
+									<div className="font-medium text-slate-800 mb-1">
+										Validation de la demande de contrat -
+										12/12/2020
+									</div>
+									<div>
+										Votre demande de contrat a été validée
+										par Olivier B. Elle a été transmise au
+										département juridique.
+									</div>
+								</div>
+							</div>
+						</div>
+						<div className="text-right mt-1">
+							<a
+								className="font-medium text-indigo-500 hover:text-indigo-600"
+								href="#0"
+							>
+								Consulter -&gt;
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			{/* Block Actions Utilisateurs */}
+			<h2 className="text-xl text-slate-800 my-2 mb-1">Actions</h2>
+			<hr className="my-6 border-t border-slate-200" />
+			{data.crud_actions.edit === true &&
+				(edit === true ? (
 					<button
-						className={`btn btn-primary`}
-						onClick={() => setEditForm(!editForm)}
+						className="btn bg-indigo-500 hover:bg-indigo-600 text-white my-1 w-full"
+						onClick={() => setEdit(false)}
 					>
 						Modifier
 					</button>
-				</header>
-				<hr className="my-6 border-t border-slate-200" />
-				<form onSubmit={handleSubmit(onSubmit)}>
-					<h2 className="text-xl text-slate-800 mb-2">
-						Identification du contrat
-					</h2>
-					<hr />
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<InputTextv2
-								name="objet"
-								control={control}
-								disabled={editForm}
-								label="Objet du contrat"
-								placeholder="Objet du contrat"
-								defaultValue=""
-							/>
-						</div>
-						<div className="flex-1 flex flex-row gap-2">
-							<div className="flex-1">
-								<InputDropdownv2
-									name="type-contrat"
-									label="Type de contrat"
-									control={control}
-									disabled={editForm}
-									data={data.typeContrat}
-									isAnother={true}
-								/>
-							</div>
-							<div className="flex-1">
-								<InputDropdownv2
-									name="departement-initiateur"
-									label="Département initiateur"
-									control={control}
-									disabled={true}
-									data={data.departementInitiateur}
-									isAnother={false}
-								/>
-							</div>
-						</div>
-					</div>
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<InputTextv2
-								name={'identite-cocontractant'}
-								control={control}
-								disabled={editForm}
-								label={'Identité du co-contractant'}
-								placeholder="Identité du co-contractant"
-								defaultValue=""
-							/>
-						</div>
-					</div>
-					<h2 className="text-xl text-slate-800 my-2">
-						Conditions du contrat
-					</h2>
-					<hr />
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<InputTextAreav2
-								name="clauses-particulieres"
-								control={control}
-								disabled={editForm}
-								label="Clauses particulières"
-								placeholder="Clauses particulières"
-								defaultValue=""
-							/>
-						</div>
-					</div>
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<InputDatev2
-								name={'date-entree-vigueur'}
-								control={control}
-								disabled={editForm}
-								label="Date d'entrée en vigueur"
-								defaultValue={new Date()}
-							/>
-						</div>
-						<div className="flex-1">
-							<InputDatev2
-								name={'date-fin-contrat'}
-								control={control}
-								disabled={editForm}
-								label="Date de fin de contrat"
-								defaultValue={new Date()}
-							/>
-						</div>
-						<div className="flex-1">
-							<InputDropdownv2
-								name="delai-denonciation"
-								label="Délai de dénonciation ou de préavis"
-								control={control}
-								disabled={editForm}
-								isAnother={false}
-								data={[
-									{ value: 1, label: '1 mois' },
-									{ value: 2, label: '2 mois' },
-									{ value: 3, label: '3 mois' },
-									{ value: 4, label: '4 mois' },
-									{ value: 5, label: '5 mois' },
-									{ value: 6, label: '6 mois' },
-									{ value: 7, label: '7 mois' },
-									{ value: 8, label: '8 mois' },
-									{ value: 9, label: '9 mois' },
-									{ value: 10, label: '10 mois' },
-									{ value: 11, label: '11 mois' },
-									{ value: 12, label: '12 mois' }
-								]}
-							/>
-						</div>
-					</div>
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<InputDropdownv2
-								name={'mode-facturation'}
-								label={'Mode de facturation'}
-								control={control}
-								disabled={editForm}
-								data={data.modeFacturation}
-								isAnother={true}
-							/>
-						</div>
-					</div>
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<InputDropdownv2
-								name={'periodicite-paiement'}
-								label={'Périodicité paiement'}
-								control={control}
-								disabled={editForm}
-								data={data.periodicitePaiement}
-								isAnother={true}
-							/>
-						</div>
-					</div>
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<InputDropdownv2
-								name={'mode-paiement'}
-								label={'Mode de paiement'}
-								control={control}
-								disabled={editForm}
-								data={data.modePaiement}
-								isAnother={true}
-							/>
-						</div>
-					</div>
-
-					<h2 className="text-xl text-slate-800 my-2">
-						Conditions de renouvellement
-					</h2>
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<InputDropdownv2
-								name={'mode-renouvellement'}
-								label={'Mode de renouvellement'}
-								control={control}
-								disabled={editForm}
-								data={data.modeRenouvellement}
-								isAnother={false}
-							/>
-						</div>
-					</div>
-
-					<h2 className="text-xl text-slate-800 my-2">
-						Conditions de modification
-					</h2>
-					<hr />
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<InputTextv2
-								name={'objet-modification'}
-								label={'Objet des conditions de modifications'}
-								placeholder={
-									'Objet des conditions de modifications'
+				) : (
+					<>
+						<button
+							className={cx(
+								'btn bg-rose-500 hover:bg-rose-600 text-white my-1 w-full',
+								{
+									'cursor-not-allowed': editLoading,
+									'opacity-50': editLoading
 								}
-								control={control}
-								disabled={editForm}
-								defaultValue=""
-							/>
-						</div>
-					</div>
-
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<InputTextAreav2
-								name="details-modification"
-								control={control}
-								disabled={editForm}
-								label="Détails des conditions de modifications"
-								placeholder="Détails des conditions de modifications"
-								defaultValue=""
-							/>
-						</div>
-					</div>
-
-					<div className="md:flex space-y-4 md:space-y-0 md:space-x-4 mt-5">
-						<div className="flex-1">
-							<DisplayDocuments documents={data.documents} />
-						</div>
-					</div>
-				</form>
-			</div>
-		</>
+							)}
+							onClick={() => setEdit(true)}
+						>
+							Annuler la modification
+						</button>
+						<button
+							className={cx(
+								'btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full',
+								{
+									'cursor-not-allowed': editLoading,
+									'opacity-50': editLoading
+								}
+							)}
+							onClick={() => {
+								updateContrat(getFormValues());
+								setEditLoading(true);
+							}}
+						>
+							{editLoading ? (
+								<>
+									<svg
+										className="animate-spin w-4 h-4 fill-current shrink-0"
+										viewBox="0 0 16 16"
+									>
+										<path d="M8 16a7.928 7.928 0 01-3.428-.77l.857-1.807A6.006 6.006 0 0014 8c0-3.309-2.691-6-6-6a6.006 6.006 0 00-5.422 8.572l-1.806.859A7.929 7.929 0 010 8c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z" />
+									</svg>
+									<span className="ml-2">
+										Enregistrement en cours...
+									</span>
+								</>
+							) : (
+								'Enregistrer'
+							)}
+						</button>
+					</>
+				))}
+			{data.possible_actions.pending_manager_approval === true && (
+				<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
+					Transmettre au département juridique
+				</button>
+			)}
+			{data.possible_actions.pending_legal_department_manager_approval ===
+				true && (
+				<>
+					<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
+						Affecter la demande de contrat à un agent
+					</button>
+					<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
+						Valider la demande de contrat
+					</button>
+				</>
+			)}
+			{data.possible_actions.pending_legal_department_manager_approval ===
+				true && (
+				<>
+					<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
+						Valider la demande de contrat
+					</button>
+					<button className="btn bg-rose-500 hover:bg-rose-600 text-white my-1 w-full">
+						Refuser la demande de contrat
+					</button>
+				</>
+			)}
+		</div>
 	);
 };

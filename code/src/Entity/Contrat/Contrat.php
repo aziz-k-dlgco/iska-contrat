@@ -24,6 +24,9 @@ class Contrat implements TimestampableInterface
 
     const CREATED = "created";
     const DEFAULT_TEXT = "Non renseigné";
+
+    const PENDING_MANAGER_APPROVAL = "pending_manager_approval";
+
     #[ORM\Id]
     #[ORM\Column(type: 'string', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]

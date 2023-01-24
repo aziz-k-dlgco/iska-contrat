@@ -22,7 +22,7 @@ trait StatutTrait
     private ?array $users = [];
 
     #[ORM\Column(length: 255)]
-    private ?bool $isListable = true;
+    private ?bool $isListable = false;
 
     /**
      * @return string|null

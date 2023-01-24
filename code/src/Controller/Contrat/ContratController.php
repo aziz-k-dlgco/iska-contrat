@@ -11,8 +11,11 @@ use App\Entity\Contrat\ModeRenouvellement;
 use App\Entity\Contrat\PeriodicitePaiement;
 use App\Entity\Contrat\TypeContrat;
 use App\Repository\Account\DepartementRepository;
+use App\Repository\Contrat\ContratRepository;
+use App\Service\Contrat\ContratPerms;
 use App\Service\Contrat\CreateContrat;
 use App\Service\Contrat\ListContrat;
+use App\Service\Contrat\UpdateContrat;
 use App\Service\Documents\GetContratDocuments;
 use App\Service\Utils\SlugTraitToJson;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,14 +56,21 @@ class ContratController extends AbstractController
     }
 
     #[Route('/infos/{id}', name: 'app_contrat_contrat_show', methods: ['GET'])]
+    //throw error if contrat not found
     public function show(
-        Contrat $contrat,
+        string $id,
+        ContratRepository $contratRepository,
         SlugTraitToJson $slugTraitToJsonSrv,
         DepartementRepository $departementRepository,
-        GetContratDocuments $getContratDocumentsSrv
+        GetContratDocuments $getContratDocumentsSrv,
+        ContratPerms $contratPermsSrv
     ): JsonResponse
     {
         try {
+            $contrat = $contratRepository->findOneBy(['id' => $id]);
+            if(empty($contrat)){
+                throw new \Exception('Contrat not found');
+            }
             /** @var User $user */
             $user = $this->getUser();
             // Récupération des éléments de l'entité
@@ -96,13 +106,42 @@ class ContratController extends AbstractController
                     ['clausesParticulieres' => $contrat->getClausesParticulieres()],
                     ['objetModification' => $contrat->getObjetConditionsModifications()],
                     ['detailsModification' => $contrat->getDetailsConditionsModifications()],
-                    ['documents' => $getContratDocumentsSrv($contrat)]
+                    ['documents' => $getContratDocumentsSrv($contrat)],
+                    ['perms' => $contratPermsSrv($contrat)]
                 )
             );
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'Error',
-                'errors' => $e->getMessage() . ' ' . $e->getTraceAsString(),
+                'errors' => $e->getMessage(),
+                'stack' => $e->getTraceAsString()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    #[Route('/{id}', name: 'app_contrat_contrat_update', methods: ['PUT'])]
+    public function update(
+        string $id,
+        Request $request,
+        ContratRepository $contratRepository,
+        UpdateContrat $updateContratSrv
+    ): JsonResponse
+    {
+        try {
+            $contrat = $contratRepository->findOneBy(['id' => $id]);
+            if(empty($contrat)){
+                throw new \Exception('Contrat not found');
+            }
+
+            // GET JSON DATA
+            $data = json_decode($request->getContent(), true);
+            $updateContratSrv($contrat, $data);
+            return new JsonResponse(['status' => 'ok']);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'Error',
+                'errors' => $e->getMessage(),
+                'stack' => $e->getTraceAsString()
             ], Response::HTTP_BAD_REQUEST);
         }
     }

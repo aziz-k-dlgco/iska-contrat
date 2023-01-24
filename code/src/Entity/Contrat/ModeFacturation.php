@@ -6,6 +6,7 @@ use Andante\TimestampableBundle\Timestampable\TimestampableInterface;
 use Andante\TimestampableBundle\Timestampable\TimestampableTrait;
 use App\Entity\Traits\SlugTrait;
 use App\Entity\Traits\StatutTrait;
+use App\Entity\Traits\StatutUserNotLimitedTrait;
 use App\Repository\Contrat\ModeFacturationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,11 +19,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class ModeFacturation implements TimestampableInterface
 {
     /**
-     * @uses TimestampableTrait, StatutTrait
+     * @uses TimestampableTrait, StatutTrait, StatutUserNotLimitedTrait
      */
-    use TimestampableTrait, StatutTrait;
+    use TimestampableTrait, StatutTrait, StatutUserNotLimitedTrait;
     // Is all entities available to all users
-    private const IS_USER_LIMITED = false;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

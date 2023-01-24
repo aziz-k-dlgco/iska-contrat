@@ -30,12 +30,15 @@ class StatutTraitConversion
                     );
 
                 if ($object) {
-                    if($object->getLib === 'Non renseigné'){
+                    if($object->getLib() === 'Non renseigné'){
+                        dump("Non renseigné");
                         return $object;
                     }
+
                     $object->addUser($this->security->getUser());
                     $this->entityManager->persist($object);
                     $this->entityManager->flush();
+                    dump("$data");
                     return $object;
                 }
 
@@ -43,6 +46,7 @@ class StatutTraitConversion
                 $reflectionClass = new \ReflectionClass($class);
                 $statut = $reflectionClass->newInstance();
                 $statut->setLib($data);
+                $statut->setIsListable(false);
                 $statut->addUser($this->security->getUser());
                 $this->entityManager->persist($statut);
                 $this->entityManager->flush();
@@ -64,6 +68,7 @@ class StatutTraitConversion
                 }
             }
         }catch (\Exception $e){
+            dump($e->getMessage() . " " . $e->getFile() . " " . $e->getLine());
             return $this->entityManager
                 ->getRepository($class)
                 ->findOneBy(

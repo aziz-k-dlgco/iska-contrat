@@ -9,14 +9,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ZZController extends AbstractController
 {
-    #[Route('/{name}', name: 'app_no_route', methods: ['GET'])]
+    #[Route('/{name}', name: 'app_no_route', methods: ['GET'], requirements: ['name' => '.*'])]
     public function index(string $name): Response
-    {
-        return $this->render('home/index.html.twig');
-    }
-
-    #[Route('/{name}/{subpath}', name: 'app_no_route2', methods: ['GET'])]
-    public function index2(string $name): Response
     {
         return $this->render('home/index.html.twig');
     }

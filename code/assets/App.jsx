@@ -48,14 +48,11 @@ function App() {
 					<>
 						<Route exact path="/" component={Home} />
 						<Route exact path="/contrat" component={ContratHome} />
+						<Route path="/contrat/new" component={ContratNew} />
 						<Route
 							exact
-							path="/contrat/new"
-							component={ContratNew}
-						/>
-						<Route
-							exact
-							path="/contrat/:id"
+							strict
+							path="/contrat/consult/:id"
 							component={ContratConsulter}
 						/>
 						<Route path="*" component={PageNotFound} />
@@ -81,7 +78,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 					<App />
 					<ToastContainer
 						position="top-center"
-						autoClose={5000}
+						autoClose={2000}
 						hideProgressBar={false}
 						newestOnTop={false}
 						closeOnClick
