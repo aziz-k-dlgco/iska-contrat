@@ -368,9 +368,7 @@ const ContratAction = ({ id, data, edit, setEdit, getFormValues }) => {
 				console.log(res);
 				setEditLoading(false);
 				setEdit(false);
-				toast.success({
-					title: 'Contrat mis à jour'
-				});
+				toast.success('Contrat mis à jour');
 				history.push('/contrat');
 			})
 			.catch((err) => {
@@ -381,6 +379,26 @@ const ContratAction = ({ id, data, edit, setEdit, getFormValues }) => {
 					title: 'Erreur lors de la mise à jour du contrat',
 					description: err.response.data.errors
 				});
+			});
+	};
+
+	const changeState = async (value) => {
+		Proxy()
+			.put(`/api/contrat/update_state/${id}`, {
+				action: value
+			})
+			.then((res) => {
+				console.log(res);
+				setEditLoading(false);
+				setEdit(false);
+				toast.success(res.data.message);
+				history.push('/contrat');
+			})
+			.catch((err) => {
+				console.log(err);
+				setEditLoading(false);
+				setEdit(false);
+				toast.success(err.data.message);
 			});
 	};
 
@@ -421,63 +439,74 @@ const ContratAction = ({ id, data, edit, setEdit, getFormValues }) => {
 			{/* Block Actions Utilisateurs */}
 			<h2 className="text-xl text-slate-800 my-2 mb-1">Actions</h2>
 			<hr className="my-6 border-t border-slate-200" />
-			{data.crud_actions.edit === true &&
-				(edit === true ? (
-					<button
-						className="btn bg-indigo-500 hover:bg-indigo-600 text-white my-1 w-full"
-						onClick={() => setEdit(false)}
-					>
-						Modifier
-					</button>
-				) : (
-					<>
+			{data.crud_actions.edit === true && (
+				<>
+					<h4 className="text-lg text-slate-800 mb-2">
+						Modifier le contrat
+					</h4>
+					{edit === true ? (
 						<button
-							className={cx(
-								'btn bg-rose-500 hover:bg-rose-600 text-white my-1 w-full',
-								{
-									'cursor-not-allowed': editLoading,
-									'opacity-50': editLoading
-								}
-							)}
-							onClick={() => setEdit(true)}
+							className="btn bg-indigo-500 hover:bg-indigo-600 text-white my-1 w-full"
+							onClick={() => setEdit(false)}
 						>
-							Annuler la modification
+							Modifier
 						</button>
-						<button
-							className={cx(
-								'btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full',
-								{
-									'cursor-not-allowed': editLoading,
-									'opacity-50': editLoading
-								}
-							)}
-							onClick={() => {
-								updateContrat(getFormValues());
-								setEditLoading(true);
-							}}
-						>
-							{editLoading ? (
-								<>
-									<svg
-										className="animate-spin w-4 h-4 fill-current shrink-0"
-										viewBox="0 0 16 16"
-									>
-										<path d="M8 16a7.928 7.928 0 01-3.428-.77l.857-1.807A6.006 6.006 0 0014 8c0-3.309-2.691-6-6-6a6.006 6.006 0 00-5.422 8.572l-1.806.859A7.929 7.929 0 010 8c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z" />
-									</svg>
-									<span className="ml-2">
-										Enregistrement en cours...
-									</span>
-								</>
-							) : (
-								'Enregistrer'
-							)}
-						</button>
-					</>
-				))}
+					) : (
+						<div className={'flex space-x-1'}>
+							<button
+								className={cx(
+									'btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-1/2',
+									{
+										'cursor-not-allowed': editLoading,
+										'opacity-50': editLoading
+									}
+								)}
+								onClick={() => {
+									updateContrat(getFormValues());
+									setEditLoading(true);
+								}}
+							>
+								{editLoading ? (
+									<>
+										<svg
+											className="animate-spin w-4 h-4 fill-current shrink-0"
+											viewBox="0 0 16 16"
+										>
+											<path d="M8 16a7.928 7.928 0 01-3.428-.77l.857-1.807A6.006 6.006 0 0014 8c0-3.309-2.691-6-6-6a6.006 6.006 0 00-5.422 8.572l-1.806.859A7.929 7.929 0 010 8c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z" />
+										</svg>
+										<span className="ml-2">
+											Enregistrement en cours...
+										</span>
+									</>
+								) : (
+									'Enregistrer'
+								)}
+							</button>
+							<button
+								className={cx(
+									'btn bg-rose-500 hover:bg-rose-600 text-white my-1 w-1/2',
+									{
+										'cursor-not-allowed': editLoading,
+										'opacity-50': editLoading
+									}
+								)}
+								onClick={() => setEdit(true)}
+							>
+								Annuler la modification
+							</button>
+						</div>
+					)}
+				</>
+			)}
 			{data.possible_actions.pending_manager_approval === true && (
 				<>
 					<hr className="my-1 border-t border-slate-200" />
-					<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
+					<button
+						className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full"
+						onClick={() => {
+							changeState('approve_manager');
+						}}
+					>
 						Transmettre au département juridique
 					</button>
 				</>

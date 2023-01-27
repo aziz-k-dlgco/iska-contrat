@@ -11,10 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation\Loggable;
-use Gedmo\Mapping\Annotation\Versioned;
 
-#[Loggable]
 #[ORM\Table(name: '`t_contrat`')]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: ContratRepository::class)]
@@ -33,7 +30,6 @@ class Contrat implements TimestampableInterface
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private $id = null;
 
-    #[Versioned]
     #[ORM\Column(length: 255)]
     private ?string $objet = null;
 
@@ -64,7 +60,6 @@ class Contrat implements TimestampableInterface
     #[ORM\OneToMany(mappedBy: 'contrats', targetEntity: Document::class, cascade: ['persist'])]
     private Collection $documents;
 
-    #[Versioned]
     #[ORM\ManyToOne(inversedBy: 'contrats')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ModeFacturation $modeFacturation = null;

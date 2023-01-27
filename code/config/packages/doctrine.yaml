@@ -21,7 +21,6 @@ doctrine:
                 dir: '%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Loggable/Entity'
                 prefix: 'Gedmo\Loggable\Entity'
                 alias: GedmoLoggable
-
 when@test:
     doctrine:
         dbal:

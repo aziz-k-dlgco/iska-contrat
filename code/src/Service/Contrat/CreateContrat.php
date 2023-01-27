@@ -14,6 +14,7 @@ use App\Entity\Contrat\TypeContrat;
 use App\Service\Utils\StatutTraitConversion;
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
+use Gedmo\Loggable\LoggableListener;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBag;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -27,6 +28,7 @@ class CreateContrat
 
     public function __construct(
         private StatutTraitConversion $statutTraitConversionSrv,
+        private LoggableListener $loggableListener,
         private Security $security,
         private EntityManagerInterface $entityManager,
         private ParameterBagInterface $params,
@@ -119,6 +121,9 @@ class CreateContrat
         // Une demande de contrat initiée par un admin ou un membre du juridique devient automatiquement un contrat
         $transition = $this->checkPerm($user) ? 'submit_by_juridique' : 'submit';
         $this->contractRequestStateMachine->apply($contrat, $transition);
+        $this->loggableListener->setUsername(
+            $user->getId()
+        );
         $this->entityManager->persist($contrat);
         $this->entityManager->flush();
         return true;

@@ -21,22 +21,23 @@ framework:
         # - approve : permet de valider la demande
         # - approve_manager : permet de transférer la demande au manager juridique
         # - transfer : permet de transférer la demande à un autre agent juridique pour validation
-            type: 'state_machine'
+        contract_request:
+            type: state_machine
             marking_store:
-                type: 'method'
-                property: 'currentState'
+                type: method
+                property: currentState
             supports:
                 - App\Entity\Contrat\Contrat
-            initial_marking: 'created'
+            initial_marking: created
             places:
                 created:
                     metadata:
-                        label: 'Demande créée'
-                        color: 'blue'
+                        label: Demande créée
+                        color: blue
                 pending_manager_approval:
                     metadata:
-                        label: 'En attente de validation du manager'
-                        color: 'default'
+                        label: En attente de validation du manager
+                        color: default
                         permissions:
                             owner:
                                 edit: true
@@ -45,115 +46,115 @@ framework:
                                 approve_manager: true
                                 edit: true
                             manager_juridique:
-                                - 'none'
+                                - none
                             user_juridique:
-                                - 'none'
+                                - none
                 pending_legal_department_manager_approval:
                     metadata:
-                        label: 'En attente de validation du manager juridique'
-                        color: 'primary'
+                        label: En attente de validation du manager juridique
+                        color: primary
                         permissions:
                             owner:
-                                - 'none'
+                                - none
                             manager:
-                                - 'none'
+                                - none
                             manager_juridique:
                                 approve: true
                                 edit: true
                                 transfer: true
                             user_juridique:
-                                - 'none'
+                                - none
                 pending_agent_approval:
                     metadata:
-                        label: "En attente de validation de l'agent"
-                        color: 'secondary'
+                        label: En attente de validation de l'agent
+                        color: secondary
                         permissions:
                             owner:
-                                - 'none'
+                                - none
                             manager:
-                                - 'none'
+                                - none
                             manager_juridique:
-                                - 'none'
+                                - none
                             user_juridique:
                                 approve: true
                                 edit: true
                 approved:
                     metadata:
-                        label: 'Validé'
-                        color: 'success'
+                        label: Validé
+                        color: success
                         permissions:
                             owner:
-                                - 'none'
+                                - none
                             manager:
-                                - 'none'
+                                - none
                             manager_juridique:
                                 edit: true
                             user_juridique:
                                 edit: true
                 rejected_by_manager:
                     metadata:
-                        label: 'Rejeté par le manager'
-                        color: 'danger'
+                        label: Rejeté par le manager
+                        color: danger
                         permissions:
                             owner:
-                                - 'none'
+                                - none
                             manager:
-                                - 'none'
+                                - none
                             manager_juridique:
-                                - 'none'
+                                - none
                             user_juridique:
-                                - 'none'
+                                - none
                 rejected_by_legal_department_manager:
                     metadata:
-                        label: 'Rejeté par le manager juridique'
-                        color: 'danger'
+                        label: Rejeté par le manager juridique
+                        color: danger
                         permissions:
                             owner:
-                                - 'none'
+                                - none
                             manager:
-                                - 'none'
+                                - none
                             manager_juridique:
-                                - 'none'
+                                - none
                             user_juridique:
-                                - 'none'
+                                - none
                 rejected_by_agent:
                     metadata:
-                        label: "Rejeté par l'agent juridique"
-                        color: 'danger'
+                        label: Rejeté par l'agent juridique
+                        color: danger
                         permissions:
                             owner:
-                                - 'none'
+                                - none
                             manager:
-                                - 'none'
+                                - none
                             manager_juridique:
-                                - 'none'
+                                - none
                             user_juridique:
-                                - 'none'
+                                - none
             transitions:
                 submit:
-                    from: 'created'
-                    to: 'pending_manager_approval'
+                    from: created
+                    to: pending_manager_approval
                 submit_by_juridique:
-                    from: 'created'
-                    to: 'approved'
+                    from: created
+                    to: approved
                 approve_manager:
-                    from: 'pending_manager_approval'
-                    to: 'pending_legal_department_manager_approval'
+                    from: pending_manager_approval
+                    to: pending_legal_department_manager_approval
                 approve_legal_department:
-                    from: 'pending_legal_department_manager_approval'
-                    to: 'approved'
+                    from: pending_legal_department_manager_approval
+                    to: approved
                 reassign_to_agent:
-                    from: 'pending_legal_department_manager_approval'
-                    to: 'pending_agent_approval'
+                    from: pending_legal_department_manager_approval
+                    to: pending_agent_approval
                 approve_agent:
-                    from: 'pending_agent_approval'
-                    to: 'approved'
+                    from: pending_agent_approval
+                    to: approved
                 reject_manager:
-                    from: 'pending_manager_approval'
-                    to: 'rejected_by_manager'
+                    from: pending_manager_approval
+                    to: rejected_by_manager
                 reject_legal_department:
-                    from: 'pending_legal_department_manager_approval'
-                    to: 'rejected_by_legal_department_manager'
+                    from: pending_legal_department_manager_approval
+                    to: rejected_by_legal_department_manager
                 reject_agent:
-                    from: 'pending_agent_approval'
-                    to: 'rejected_by_agent'
+                    from: pending_agent_approval
+                    to: rejected_by_agent

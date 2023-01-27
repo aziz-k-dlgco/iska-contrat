@@ -13,6 +13,7 @@ use App\Entity\Contrat\TypeContrat;
 use App\Repository\Account\DepartementRepository;
 use App\Repository\Contrat\ContratRepository;
 use App\Service\Contrat\ContratPerms;
+use App\Service\Contrat\ContratUpdateState;
 use App\Service\Contrat\CreateContrat;
 use App\Service\Contrat\ListContrat;
 use App\Service\Contrat\UpdateContrat;
@@ -109,6 +110,34 @@ class ContratController extends AbstractController
                     ['documents' => $getContratDocumentsSrv($contrat)],
                     ['perms' => $contratPermsSrv($contrat)]
                 )
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'Error',
+                'errors' => $e->getMessage(),
+                'stack' => $e->getTraceAsString()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    #[Route('/update_state/{id}', name: 'app_contrat_contrat_update_state', methods: ['PUT'])]
+    public function update_state(
+        string $id,
+        Request $request,
+        ContratRepository $contratRepository,
+        ContratUpdateState $contratUpdateStateSrv
+    ){
+        try {
+            $contrat = $contratRepository->findOneBy(['id' => $id]);
+            if(empty($contrat)){
+                throw new \Exception('Contrat not found');
+            }
+
+            $data = json_decode($request->getContent(), true);
+
+            return $this->json(
+                ($contratUpdateStateSrv)($contrat, $data['action']),
+                Response::HTTP_OK
             );
         } catch (\Exception $e) {
             return new JsonResponse([

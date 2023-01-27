@@ -2,6 +2,7 @@
 
 namespace App\Service\Contrat;
 
+use App\Entity\Account\User;
 use App\Entity\Contrat\Contrat;
 use App\Entity\Contrat\ModeFacturation;
 use App\Entity\Contrat\ModePaiement;
@@ -10,12 +11,16 @@ use App\Entity\Contrat\PeriodicitePaiement;
 use App\Entity\Contrat\TypeContrat;
 use App\Service\Utils\StatutTraitConversion;
 use Doctrine\ORM\EntityManagerInterface;
+use Gedmo\Loggable\LoggableListener;
+use Symfony\Component\Security\Core\Security;
 
 class UpdateContrat
 {
     const DEFAULT_TEXT = 'Non renseigné';
 
     public function __construct(
+        private Security $security,
+        private LoggableListener $loggableListener,
         private StatutTraitConversion $statutTraitConversionSrv,
         private EntityManagerInterface $entityManager,
     )
@@ -75,6 +80,11 @@ class UpdateContrat
                 $periodicite_paiement,
             );*/
 
+            /* @var User $user */
+            $user = $this->security->getUser();
+            $this->loggableListener->setUsername(
+                $user->getId()
+            );
             $this->entityManager->persist($contrat);
             $this->entityManager->flush();
             return true;

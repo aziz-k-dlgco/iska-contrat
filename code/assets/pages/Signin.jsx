@@ -31,6 +31,7 @@ function Signin() {
 				console.log('Logging in...');
 			},
 			() => {
+				localStorage.removeItem('jwt-expired');
 				console.log('Logged in!');
 				history.push('/');
 			},
