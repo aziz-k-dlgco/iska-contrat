@@ -59,6 +59,17 @@ class ContratLogs implements CreatedAtTimestampableInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'text' => $this->getText(),
+            'createdAt' => $this->getCreatedAt()->format('d/m/Y'),
+            'color' => self::COLORS[$this->getTransition()] ?? self::NEUTRAL_COLOR,
+        ];
+    }
+
     public function getId(): ?int
     {
         return $this->id;

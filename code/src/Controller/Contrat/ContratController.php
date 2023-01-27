@@ -5,6 +5,7 @@ namespace App\Controller\Contrat;
 use App\Entity\Account\Departement;
 use App\Entity\Account\User;
 use App\Entity\Contrat\Contrat;
+use App\Entity\Contrat\ContratLogs;
 use App\Entity\Contrat\ModeFacturation;
 use App\Entity\Contrat\ModePaiement;
 use App\Entity\Contrat\ModeRenouvellement;
@@ -108,7 +109,8 @@ class ContratController extends AbstractController
                     ['objetModification' => $contrat->getObjetConditionsModifications()],
                     ['detailsModification' => $contrat->getDetailsConditionsModifications()],
                     ['documents' => $getContratDocumentsSrv($contrat)],
-                    ['perms' => $contratPermsSrv($contrat)]
+                    ['perms' => $contratPermsSrv($contrat)],
+                    ['logs' => array_map(fn (ContratLogs $log) => $log->toArray(), $contrat->getLogs()->toArray())]
                 )
             );
         } catch (\Exception $e) {

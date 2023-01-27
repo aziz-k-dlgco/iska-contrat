@@ -333,6 +333,7 @@ const ContratConsult = ({ data, editForm, setEdit }) => {
 					<ContratAction
 						id={data.id}
 						data={data.perms}
+						logs={data.logs}
 						edit={editForm}
 						setEdit={setEdit}
 						getFormValues={getValues}
@@ -343,7 +344,7 @@ const ContratConsult = ({ data, editForm, setEdit }) => {
 	);
 };
 
-const ContratAction = ({ id, data, edit, setEdit, getFormValues }) => {
+const ContratAction = ({ id, data, logs, edit, setEdit, getFormValues }) => {
 	// Rediriger à l'accueil après une opération
 	const history = useHistory();
 	const { Proxy } = useContext(ApiContext);
@@ -408,33 +409,35 @@ const ContratAction = ({ id, data, edit, setEdit, getFormValues }) => {
 			<h2 className="text-xl text-slate-800 mb-2">Historique</h2>
 			<hr className="my-6 border-t border-slate-200" />
 			<div className="space-y-3">
-				<div className="place-content-center">
-					<div className="inline-flex flex-col min-w-full px-4 py-2 rounded-sm text-sm bg-white shadow-lg border border-slate-200 text-slate-600">
-						<div className="flex w-full justify-between items-start">
-							<div className="flex">
-								<div>
-									<div className="font-medium text-slate-800 mb-1">
-										Validation de la demande de contrat -
-										12/12/2020
-									</div>
+				{logs.map((log, index) => (
+					<div className="place-content-center w-full" key={index}>
+						<div className="inline-flex flex-col w-full px-4 py-2 rounded-sm text-sm bg-white shadow-lg border border-slate-200 text-slate-600">
+							<div className="flex w-full justify-between items-start">
+								<div className="flex">
 									<div>
-										Votre demande de contrat a été validée
-										par Olivier B. Elle a été transmise au
-										département juridique.
+										<div className="font-medium text-slate-800 mb-1">
+											<div
+												className={
+													'text-xs inline-flex font-medium bg-indigo-100 text-indigo-600 rounded-full text-center px-2.5 py-1 ' +
+													log.color
+												}
+											>
+												{log.title ||
+													'Changement de statut'}
+											</div>
+											&nbsp;|&nbsp;<i>12/12/2020</i>
+										</div>
+										<div>
+											{log.text ||
+												'Le contrat a été mis à jour'}
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-						<div className="text-right mt-1">
-							<a
-								className="font-medium text-indigo-500 hover:text-indigo-600"
-								href="#0"
-							>
-								Consulter -&gt;
-							</a>
+							<div className="text-right mt-1"></div>
 						</div>
 					</div>
-				</div>
+				))}
 			</div>
 			{/* Block Actions Utilisateurs */}
 			<h2 className="text-xl text-slate-800 my-2 mb-1">Actions</h2>
