@@ -71,7 +71,7 @@ class ContratPerms
                 ];
 
                 $possible_actions = [
-                    'pending_manager_approval' => isset($placeMetaData['permissions'][$perms]['approve_manager']) ?? false,
+                    'pending_manager_approval' => isset($placeMetaData['permissions'][$perms]['approve_manager']) && $contrat->getCurrentState() === 'pending_manager_approval',
                     'pending_legal_department_manager_approval' => isset($placeMetaData['permissions'][$perms]['transfer']) ?? false,
                     'pending_agent_approval' => isset($placeMetaData['permissions'][$perms]['approve']) ?? false,
                 ];

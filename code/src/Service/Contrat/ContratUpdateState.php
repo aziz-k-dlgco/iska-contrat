@@ -26,6 +26,7 @@ class ContratUpdateState
             /** @var User $user */
             $user = $user ?? $this->security->getUser();
 
+            // Verifie si la transition est possible
             if(!$this->contractRequestStateMachine->can($contrat, $actionToExecute)){
                 throw new \Exception("Not allowed to execute action");
             }
@@ -33,15 +34,19 @@ class ContratUpdateState
             // Get possible actions and perms
             $possible_actions = (($this->contratPermsSrv)($contrat, $user))['possible_actions'];
 
-            if(isset($possible_actions[$contrat->getCurrentState()])){
-                if(!$possible_actions[$contrat->getCurrentState()] ?? true){
+            // Etat actuel du contrat avant la transition
+            $stateBefore = $contrat->getCurrentState();
+
+            if(isset($possible_actions[$stateBefore])){
+                if(!$possible_actions[$stateBefore] ?? true){
                     throw new \Exception("Not allowed to execute action");
                 }
             }
 
             $this->contractRequestStateMachine->apply($contrat, $actionToExecute);
 
-            dump($contrat);
+            $this->entityManager->persist($contrat);
+            $this->entityManager->flush();
 
             return [
                 'res' => true,

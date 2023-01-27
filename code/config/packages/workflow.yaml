@@ -134,27 +134,63 @@ framework:
                 submit:
                     from: created
                     to: pending_manager_approval
+                    metadata:
+                        label_color: "bg-sky-100 text-sky-600"
+                        title: "Création de la demande de contrat"
+                        description: "La demande de contrat a été créée par l'agent"
                 submit_by_juridique:
                     from: created
                     to: approved
+                    metadata:
+                        label_color: "bg-amber-100 text-amber-600"
+                        title: "Création d'un contrat"
+                        description: "Un contrat a été créé par l'agent juridique"
                 approve_manager:
                     from: pending_manager_approval
                     to: pending_legal_department_manager_approval
+                    metadata:
+                        label_color: "bg-emerald-100 text-emerald-600"
+                        title: "Validation du manager"
+                        description: "Demande transmise au département juridique, validation effectuée par"
                 approve_legal_department:
                     from: pending_legal_department_manager_approval
                     to: approved
+                    metadata:
+                        label_color: "bg-amber-100 text-amber-600"
+                        title: "Validation de la demande de contrat"
+                        description: "Validation de la demande de contrat par le département juridique. -"
                 reassign_to_agent:
                     from: pending_legal_department_manager_approval
                     to: pending_agent_approval
+                    metadata:
+                        label_color: "bg-emerald-100 text-emerald-600"
+                        title: "Demande attribuée à un agent"
+                        description: "Demande attribuée et en attente de validation par"
                 approve_agent:
                     from: pending_agent_approval
                     to: approved
+                    metadata:
+                        label_color: "bg-amber-100 text-amber-600"
+                        title: "Validation de la demande de contrat"
+                        description: "Validation de la demande de contrat par le département juridique. -"
                 reject_manager:
                     from: pending_manager_approval
                     to: rejected_by_manager
+                    metadata:
+                        label_color: "bg-rose-100 text-rose-600"
+                        title: "Rejet de la demande de contrat"
+                        description: "Rejet de la demande de contrat par le manager"
                 reject_legal_department:
                     from: pending_legal_department_manager_approval
                     to: rejected_by_legal_department_manager
+                    metadata:
+                        label_color: "bg-rose-100 text-rose-600"
+                        title: "Rejet de la demande de contrat"
+                        description: "Rejet de la demande de contrat par le service juridique -"
                 reject_agent:
                     from: pending_agent_approval
                     to: rejected_by_agent
+                    metadata:
+                        label_color: "bg-rose-100 text-rose-600"
+                        title: "Rejet de la demande de contrat"
+                        description: "Rejet de la demande de contrat par le service juridique -"

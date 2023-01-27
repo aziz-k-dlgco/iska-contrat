@@ -84,6 +84,9 @@ class Contrat implements TimestampableInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Departement $departementInitiateur = null;
 
+    #[ORM\OneToMany(mappedBy: 'contrat', targetEntity: ContratLogs::class, cascade: ['persist'])]
+    private Collection $logs;
+
     public function toSimpleArray(){
         return [
             'id' => $this->getId(),
@@ -106,6 +109,7 @@ class Contrat implements TimestampableInterface
     public function __construct()
     {
         $this->documents = new ArrayCollection();
+        $this->logs = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -326,6 +330,36 @@ class Contrat implements TimestampableInterface
     public function setDepartementInitiateur(?Departement $departementInitiateur): self
     {
         $this->departementInitiateur = $departementInitiateur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ContratLogs>
+     */
+    public function getLogs(): Collection
+    {
+        return $this->logs;
+    }
+
+    public function addLog(ContratLogs $log): self
+    {
+        if (!$this->logs->contains($log)) {
+            $this->logs->add($log);
+            $log->setContrat($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLog(ContratLogs $log): self
+    {
+        if ($this->logs->removeElement($log)) {
+            // set the owning side to null (unless already changed)
+            if ($log->getContrat() === $this) {
+                $log->setContrat(null);
+            }
+        }
 
         return $this;
     }
