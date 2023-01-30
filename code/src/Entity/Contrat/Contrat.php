@@ -87,6 +87,9 @@ class Contrat implements TimestampableInterface
     #[ORM\OneToMany(mappedBy: 'contrat', targetEntity: ContratLogs::class, cascade: ['persist'])]
     private Collection $logs;
 
+    #[ORM\OneToOne(mappedBy: 'contrat', cascade: ['persist', 'remove'])]
+    private ?ContratValidation $validation = null;
+
     public function toSimpleArray(){
         return [
             'id' => $this->getId(),
@@ -360,6 +363,23 @@ class Contrat implements TimestampableInterface
                 $log->setContrat(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getValidation(): ?ContratValidation
+    {
+        return $this->validation;
+    }
+
+    public function setValidation(ContratValidation $validation): self
+    {
+        // set the owning side of the relation if necessary
+        if ($validation->getContrat() !== $this) {
+            $validation->setContrat($this);
+        }
+
+        $this->validation = $validation;
 
         return $this;
     }

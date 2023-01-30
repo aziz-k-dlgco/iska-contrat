@@ -55,7 +55,7 @@ class ContratUpdateState
         }catch (\Exception $e){
             return [
                 'res' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage() . ' ' . $e->getTraceAsString()
             ];
         }
     }

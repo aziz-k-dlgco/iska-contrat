@@ -4,6 +4,7 @@ namespace App\Service\Contrat;
 
 use App\Entity\Account\User;
 use App\Entity\Contrat\Contrat;
+use App\Service\Account\GetUsersJuridique;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -11,6 +12,7 @@ class ContratPerms
 {
     public function __construct(
         private Security $security,
+        private GetUsersJuridique $getUsersJuridique,
         private WorkflowInterface $contractRequestStateMachine
     )
     {
@@ -22,6 +24,9 @@ class ContratPerms
         // Si l'utilisateur est le créateur du contrat
         if($contrat->getOwnedBy() === $user){
             $perms = 'owner';
+            if($this->getUsersJuridique->checkUserJuridique($user)){
+                $perms = 'user_juridique';
+            }
             return $perms;
         } elseif (
             $this->security->isGranted('ROLE_MANAGER')

@@ -50,6 +50,9 @@ class User implements UserInterface, TimestampableInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $lastConnection = null;
 
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?UserData $additionnalData = null;
+
     #[ORM\PrePersist]
     public function prePersist(): void
     {
@@ -191,6 +194,23 @@ class User implements UserInterface, TimestampableInterface
     public function setDepartement(?Departement $departement): self
     {
         $this->departement = $departement;
+
+        return $this;
+    }
+
+    public function getAdditionnalData(): ?UserData
+    {
+        return $this->additionnalData;
+    }
+
+    public function setAdditionnalData(UserData $additionnalData): self
+    {
+        // set the owning side of the relation if necessary
+        if ($additionnalData->getUser() !== $this) {
+            $additionnalData->setUser($this);
+        }
+
+        $this->additionnalData = $additionnalData;
 
         return $this;
     }

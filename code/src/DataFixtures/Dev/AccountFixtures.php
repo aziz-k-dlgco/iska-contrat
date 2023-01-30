@@ -6,6 +6,8 @@ use App\DataFixtures\Account\RolesFixtures;
 use App\Entity\Account\Departement;
 use App\Entity\Account\Roles;
 use App\Entity\Account\User;
+use App\Entity\Account\UserData;
+use Carbon\CarbonInterval;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -71,6 +73,10 @@ class AccountFixtures extends Fixture implements FixtureGroupInterface, Dependen
             $accountE->setDepartement($departement);
             $accountE->setIsActive($account['isActive']);
             $accountE->setRoles([$role->getLib()]);
+            $accountE->setAdditionnalData(
+                (new UserData())
+                ->setDelaiTraitementContrat((CarbonInterval::days(14))->toDateInterval())
+            );
             $manager->persist($accountE);
         }
 

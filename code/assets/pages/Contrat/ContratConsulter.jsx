@@ -349,6 +349,22 @@ const ContratAction = ({ id, data, logs, edit, setEdit, getFormValues }) => {
 	const history = useHistory();
 	const { Proxy } = useContext(ApiContext);
 	const [editLoading, setEditLoading] = useState(false);
+	const [showUsersJuridiquesSelect, setShowUsersJuridiquesSelect] =
+		useState(false);
+	const [usersJuridiques, setUsersJuridiques] = useState([]);
+	const [selectedUserJuridique, setSelectedUserJuridique] = useState(null);
+
+	const loadUsersJuridiques = async () => {
+		Proxy()
+			.get('/api/user/user_juridique')
+			.then((res) => {
+				console.log(res.data);
+				setUsersJuridiques(res.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
 
 	const defaultValues = {
 		crud_actions: {
@@ -399,9 +415,44 @@ const ContratAction = ({ id, data, logs, edit, setEdit, getFormValues }) => {
 				console.log(err);
 				setEditLoading(false);
 				setEdit(false);
-				toast.success(err.data.message);
+				toast.error(err.data.message);
 			});
 	};
+
+	const assignToUserJuridique = async () => {
+		if (selectedUserJuridique === null) {
+			toast.error('Veuillez sélectionner un agent');
+			return;
+		}
+		Proxy()
+			.put(`/api/contrat/reassign_to_agent`, {
+				contrat_id: id,
+				user_id: selectedUserJuridique
+			})
+			.then((res) => {
+				console.log(res.data);
+				setEditLoading(false);
+				setEdit(false);
+				toast.success(res.data.message);
+				history.push('/contrat');
+			})
+			.catch((err) => {
+				console.log(err.data);
+				setEditLoading(false);
+				setEdit(false);
+				toast.error(err.data.message);
+			});
+	};
+
+	useEffect(() => {
+		if (showUsersJuridiquesSelect) {
+			loadUsersJuridiques();
+		}
+	}, [showUsersJuridiquesSelect]);
+
+	useEffect(() => {
+		console.log(selectedUserJuridique);
+	}, [selectedUserJuridique]);
 
 	return (
 		<div className="bg-white p-5 shadow-lg rounded-sm border border-slate-200 mb-5 w-full h-80">
@@ -518,18 +569,92 @@ const ContratAction = ({ id, data, logs, edit, setEdit, getFormValues }) => {
 				true && (
 				<>
 					<hr className="my-1 border-t border-slate-200" />
-					<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
-						Affecter la demande de contrat à un agent
-					</button>
+					{!showUsersJuridiquesSelect ? (
+						<button
+							className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full"
+							onClick={() => {
+								setShowUsersJuridiquesSelect(true);
+							}}
+						>
+							Affecter la demande de contrat à un agent
+						</button>
+					) : (
+						<div className={'flex space-x-1'}>
+							<select
+								id="country"
+								className="form-select w-1/2"
+								onChange={(e) =>
+									setSelectedUserJuridique(e.target.value)
+								}
+							>
+								{usersJuridiques.map((user) => (
+									<option
+										value={user.value}
+										key={user.value}
+										/* Select first per default */
+									>
+										{user.label}
+									</option>
+								))}
+							</select>
+							<div className="w-1/2 flex space-x-1">
+								<button
+									className={cx('btn my-1 w-1/2', {
+										'cursor-not-allowed text-emerald-500 border-slate-200 hover:border-slate-300':
+											selectedUserJuridique === null,
+										'bg-emerald-500 hover:bg-emerald-600 text-white':
+											selectedUserJuridique != null
+									})}
+									onClick={() => {
+										assignToUserJuridique();
+									}}
+								>
+									Valider
+								</button>
+								<button
+									className={cx(
+										'btn border-slate-200 hover:bg-rose-600 hover:text-white text-slate-600 my-1 w-1/2'
+									)}
+									onClick={() =>
+										setShowUsersJuridiquesSelect(false)
+									}
+								>
+									Annuler
+								</button>
+							</div>
+						</div>
+					)}
 				</>
 			)}
 			{data.possible_actions.pending_agent_approval === true && (
 				<>
 					<hr className="my-1 border-t border-slate-200" />
-					<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full">
+					<button
+						className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full"
+						onClick={() => {
+							changeState(
+								data.possible_actions
+									.pending_legal_department_manager_approval ===
+									true
+									? 'approve_legal_department'
+									: 'approve_agent'
+							);
+						}}
+					>
 						Valider la demande de contrat
 					</button>
-					<button className="btn bg-rose-500 hover:bg-rose-600 text-white my-1 w-full">
+					<button
+						className="btn bg-rose-500 hover:bg-rose-600 text-white my-1 w-full"
+						onClick={() => {
+							changeState(
+								data.possible_actions
+									.pending_legal_department_manager_approval ===
+									true
+									? 'reject_legal_department'
+									: 'reject_agent'
+							);
+						}}
+					>
 						Refuser la demande de contrat
 					</button>
 				</>

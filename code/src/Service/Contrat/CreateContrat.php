@@ -11,6 +11,8 @@ use App\Entity\Contrat\ModePaiement;
 use App\Entity\Contrat\ModeRenouvellement;
 use App\Entity\Contrat\PeriodicitePaiement;
 use App\Entity\Contrat\TypeContrat;
+use App\Service\Account\CheckUserRole;
+use App\Service\Account\GetUsersJuridique;
 use App\Service\Utils\StatutTraitConversion;
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,7 +35,9 @@ class CreateContrat
         private EntityManagerInterface $entityManager,
         private ParameterBagInterface $params,
         private SluggerInterface $slugger,
-        private WorkflowInterface $contractRequestStateMachine
+        private WorkflowInterface $contractRequestStateMachine,
+        private GetUsersJuridique $getUsersJuridiqueSrv,
+        private CheckUserRole $checkUserRoleSrv,
     )
     {
     }
@@ -64,7 +68,7 @@ class CreateContrat
         $periodicite_paiement = ($this->statutTraitConversionSrv)($data['periodicite-paiement'] ?? self::DEFAULT_TEXT, PeriodicitePaiement::class);
 
         $departement = $user->getDepartement();
-        if($this->checkPerm($user)){
+        if($this->getUsersJuridiqueSrv->checkUserJuridique($user)){
             if (isset($data['departement-initiateur'])){
                 if(is_numeric($data['departement-initiateur'])){
                     $departement = $this->entityManager
@@ -119,7 +123,8 @@ class CreateContrat
             );
         }
         // Une demande de contrat initiée par un admin ou un membre du juridique devient automatiquement un contrat
-        $transition = $this->checkPerm($user) ? 'submit_by_juridique' : 'submit';
+        $transition = ($this->checkUserRoleSrv)($user, 'ROLE_MANAGER') ? 'submit_by_manager' : 'submit';
+        $transition = $this->getUsersJuridiqueSrv->checkUserJuridique($user) ? 'submit_by_juridique' : $transition;
         $this->contractRequestStateMachine->apply($contrat, $transition);
         $this->loggableListener->setUsername(
             $user->getId()
@@ -127,13 +132,5 @@ class CreateContrat
         $this->entityManager->persist($contrat);
         $this->entityManager->flush();
         return true;
-    }
-
-    private function checkPerm(User $user): bool{
-        $roles = $user->getRoles();
-        return
-            in_array('ROLE_USER_JURIDIQUE', $roles) ||
-            in_array('ROLE_MANAGER_JURIDIQUE', $roles) ||
-            in_array('ROLE_ADMIN', $roles);
     }
 }

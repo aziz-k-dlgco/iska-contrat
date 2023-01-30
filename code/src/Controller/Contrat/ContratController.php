@@ -12,7 +12,9 @@ use App\Entity\Contrat\ModeRenouvellement;
 use App\Entity\Contrat\PeriodicitePaiement;
 use App\Entity\Contrat\TypeContrat;
 use App\Repository\Account\DepartementRepository;
+use App\Repository\Account\UserRepository;
 use App\Repository\Contrat\ContratRepository;
+use App\Service\Account\GetUsersJuridique;
 use App\Service\Contrat\ContratPerms;
 use App\Service\Contrat\ContratUpdateState;
 use App\Service\Contrat\CreateContrat;
@@ -20,11 +22,14 @@ use App\Service\Contrat\ListContrat;
 use App\Service\Contrat\UpdateContrat;
 use App\Service\Documents\GetContratDocuments;
 use App\Service\Utils\SlugTraitToJson;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 #[Route('/api/contrat')]
 class ContratController extends AbstractController
@@ -141,6 +146,64 @@ class ContratController extends AbstractController
                 ($contratUpdateStateSrv)($contrat, $data['action']),
                 Response::HTTP_OK
             );
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'Error',
+                'errors' => $e->getMessage(),
+                'stack' => $e->getTraceAsString()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    #[Route('/reassign_to_agent', name: 'app_contrat_contrat_assign_to_agent', methods: ['PUT'])]
+    public function reassign_to_agent(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ContratRepository $contratRepository,
+        UserRepository $userRepository,
+        WorkflowInterface $contractRequestStateMachine,
+        GetUsersJuridique $getUsersJuridiqueSrv
+    ){
+        try {
+            $data = json_decode($request->getContent(), true);
+
+            if(empty($data['contrat_id']) || empty($data['user_id'])){
+                throw new \Exception('Missing data');
+            }
+
+            $contrat = $contratRepository->findOneBy(['id' => $data['contrat_id']]);
+            if(empty($contrat)){
+                throw new \Exception('Contrat not found');
+            }
+
+            $user = $userRepository->findOneBy(['id' => $data['user_id']]);
+            if(empty($user)){
+                throw new \Exception('User not found');
+            }
+
+            if ($getUsersJuridiqueSrv->checkUserJuridique($user) === false) {
+                throw new \Exception('User is not juridique');
+            }
+
+            if ($contractRequestStateMachine->can($contrat, 'reassign_to_agent')) {
+                $contractRequestStateMachine->apply($contrat, 'reassign_to_agent',
+                    [
+                        'user' => $user,
+                    ]
+                );
+            }
+
+            $entityManager->persist($contrat);
+            $entityManager->flush();
+
+            return $this->json(
+                [
+                    'res' => true,
+                    'message' => 'Action réalisée avec succès'
+                ],
+                Response::HTTP_OK
+            );
+
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'Error',
