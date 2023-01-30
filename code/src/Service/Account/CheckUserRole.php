@@ -13,11 +13,11 @@ class CheckUserRole
     {
     }
 
-    public function __invoke(User $user, string $role) : bool
+    public function __invoke(User $user, string $roleToCheck) : bool
     {
         $roles = $this->roleHierarchy->getReachableRoleNames($user->getRoles());
         foreach ($roles as $role) {
-            if ($role === $role) {
+            if ($role === $roleToCheck) {
                 return true;
             }
         }
