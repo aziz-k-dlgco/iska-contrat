@@ -48,10 +48,28 @@ class ContratLogsEndTransitionSubscriber implements EventSubscriberInterface
                     )
             );
         }
+        elseif ($transitionName === 'approve_legal_department'){
+            // On met à jour le délai de traitement
+            $contrat->setValidation(
+                (new ContratValidation())
+                    ->setUser($user)
+                    ->setIsHorsDelai(false)
+                    ->setDelai(
+                        $user
+                            ->getAdditionnalData()
+                            ->getDelaiTraitementContrat() ?? (CarbonInterval::days(14)->toDateInterval())
+                    )
+                ->setIsManagerAction(true)
+            );
+        }
         // Si la transition est reject_agent ou approve_agent, on marque la validation comme faite
         elseif ($transitionName === 'reject_agent' || $transitionName === 'approve_agent'){
             $validation = $contrat->getValidation();
-            $validation->setUpdatedAt(new \DateTimeImmutable());
+            $validation->setIsHorsDelai(
+                // add delai to created_at, if it's less than now, it's hors delai
+                $validation->getCreatedAt()->add($validation->getDelai()) < new \DateTime()
+            )
+            ->setUpdatedAt(new \DateTimeImmutable());
             $contrat->setValidation($validation);
         }
         // Récupération des métadonnées de la transition

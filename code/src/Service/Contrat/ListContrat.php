@@ -4,7 +4,10 @@ namespace App\Service\Contrat;
 
 use App\Entity\Account\User;
 use App\Entity\Contrat\Contrat;
+use App\Entity\Contrat\ContratValidation;
 use App\Repository\Contrat\ContratRepository;
+use App\Repository\Contrat\ContratValidationRepository;
+use App\Service\Account\CheckUserRole;
 use Symfony\Component\Security\Core\Security;
 
 class ListContrat
@@ -12,26 +15,93 @@ class ListContrat
     public function __construct(
         private Security $security,
         private ContratRepository $contratRepository,
-        private StatusToLibContrat $statusToLibContrat
+        private ContratValidationRepository $contratValidationRepository,
+        private StatusToLibContrat $statusToLibContrat,
+        private CheckUserRole $checkUserRole,
     )
     {
     }
 
-    public function __invoke()
+    public function __invoke(User $user = null)
     {
         $title = 'Liste des contrats';
         /** @var User $user */
-        $user = $this->security->getUser();
+        $user = $user ?? $this->security->getUser();
         $data =  [];
-        switch (true) {
-            case $user->hasRole('ROLE_USER'):
-                $data =  array_map(fn(Contrat $contrat) => $contrat->toSimpleArray(), $this->contratRepository->listByOwnedBy($user));
-                // apply libContrat filter on currentState field
-                array_walk($data, fn(&$item) => $item['currentState'] = ($this->statusToLibContrat)($item['currentState']));
-                array_walk($data, fn(&$item) => $item['link'] = '/contrat/consult/' . $item['id']);
-            break;
+
+        // Récupération des contrats initiés par l'utilisateur
+        if(($this->checkUserRole)($user, 'ROLE_USER')){
+            $data = array_merge(
+                $data,
+                array_map(
+                    fn(Contrat $contrat) => $contrat->toSimpleArray(),
+                    $this->contratRepository->listByOwnedBy($user)
+                )
+            );
         }
 
+        // Récupération des demandes de contrat en attente de validation par l'utilisateur juridique
+        if(($this->checkUserRole)($user, 'ROLE_USER_JURIDIQUE')){
+            dump('hh');
+            $data = array_merge(
+                $data,
+                array_map(
+                    fn(ContratValidation $contratValidation) => $contratValidation->getContrat()->toSimpleArray(),
+                    // Utilisation du système de validation pour aller chercher le contrat
+                    $this->contratValidationRepository->findBy([
+                        'user' => $user,
+                    ])
+                )
+            );
+        }
+
+        // Récupération des contrats de département du manager de département
+        if(($this->checkUserRole)($user, 'ROLE_MANAGER')){
+            $data = array_merge(
+                $data,
+                array_map(
+                    fn(Contrat $contrat) => $contrat->toSimpleArray(),
+                    $this->contratRepository->findBy([
+                        'departementInitiateur' => $user->getDepartement()
+                    ])
+                )
+            );
+        }
+
+        // Récupération des contrats du manager juridique
+        if(($this->checkUserRole)($user, 'ROLE_MANAGER_JURIDIQUE')){
+            dump('oo');
+            // Ayant déja récupéré ses contrats initiés, ceux qu'il a traités et ceux de son département, il ne reste que les demandes en attente de validation
+            $data = array_merge(
+                $data,
+                array_map(
+                    fn(Contrat $contrat) => $contrat->toSimpleArray(),
+                    $this->contratRepository->findBy([
+                        'currentState' => [
+                            'pending_legal_department_manager_approval',
+                            'pending_agent_approval',
+                            'approved',
+                            'rejected_by_legal_department_manager',
+                            'rejected_by_agent'
+                        ]
+                    ])
+                )
+            );
+        }
+
+        // Suppression des doublons
+        $data = array_unique($data, SORT_REGULAR);
+        // Suppression des tableaux vides
+        $data = array_filter($data);
+        // Si data est un tableau associatif, on le transforme en tableau simple
+        if(array_keys($data) !== range(0, count($data) - 1)){
+            $data = array_values($data);
+        }
+
+        // apply libContrat filter on currentState field
+        array_walk($data, fn(&$item) => $item['currentState'] = ($this->statusToLibContrat)($item['currentState']));
+        array_walk($data, fn(&$item) => $item['link'] = '/contrat/consult/' . $item['id']);
+        dump(gettype($data));
         return [
             'title' => $title,
             'headers' => $this->getHeaders(),
@@ -44,7 +114,7 @@ class ListContrat
         return [
                 'id' => [
                     'title' => "Identifiant",
-                    'display' => true,
+                    'display' => false,
                 ],
                 'object' => [
                     'title' => "Objet",
@@ -52,6 +122,10 @@ class ListContrat
                 ],
                 'ownedBy' => [
                     'title' => "Créé par",
+                    'display' => true,
+                ],
+                'createdAt' => [
+                    'title' => "Créé le",
                     'display' => true,
                 ],
                 'typeContrat' => [

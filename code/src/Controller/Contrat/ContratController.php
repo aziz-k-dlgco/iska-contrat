@@ -57,7 +57,7 @@ class ContratController extends AbstractController
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'Error',
-                'errors' => $e->getMessage(),
+                'errors' => $e->getMessage() . ' ' . $e->getTraceAsString(),
             ], Response::HTTP_BAD_REQUEST);
         }
     }

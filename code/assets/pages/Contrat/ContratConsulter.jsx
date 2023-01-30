@@ -555,14 +555,24 @@ const ContratAction = ({ id, data, logs, edit, setEdit, getFormValues }) => {
 			{data.possible_actions.pending_manager_approval === true && (
 				<>
 					<hr className="my-1 border-t border-slate-200" />
-					<button
-						className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-full"
-						onClick={() => {
-							changeState('approve_manager');
-						}}
-					>
-						Transmettre au département juridique
-					</button>
+					<div className={'flex space-x-1'}>
+						<button
+							className="btn bg-emerald-500 hover:bg-emerald-600 text-white my-1 w-1/2"
+							onClick={() => {
+								changeState('approve_manager');
+							}}
+						>
+							Transmettre au département juridique
+						</button>
+						<button
+							className={cx(
+								'btn border-slate-200 hover:bg-rose-600 hover:text-white text-slate-600 my-1 w-1/2'
+							)}
+							onClick={() => changeState('reject_manager')}
+						>
+							Rejeter la demande
+						</button>
+					</div>
 				</>
 			)}
 			{data.possible_actions.pending_legal_department_manager_approval ===
@@ -583,10 +593,17 @@ const ContratAction = ({ id, data, logs, edit, setEdit, getFormValues }) => {
 							<select
 								id="country"
 								className="form-select w-1/2"
-								onChange={(e) =>
-									setSelectedUserJuridique(e.target.value)
-								}
+								onChange={(e) => {
+									if (e.target.value !== 'null') {
+										setSelectedUserJuridique(
+											e.target.value
+										);
+									}
+								}}
 							>
+								<option value="null">
+									Sélectionner un agent
+								</option>
 								{usersJuridiques.map((user) => (
 									<option
 										value={user.value}

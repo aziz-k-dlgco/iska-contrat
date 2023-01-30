@@ -106,6 +106,7 @@ class Contrat implements TimestampableInterface
             'periodicitePaiement' => $this->getPeriodicitePaiement()->getLib(),
             'typeContrat' => $this->getTypeContrat()->getLib(),
             'departementInitiateur' => $this->getDepartementInitiateur()->getNom(),
+            'createdAt' => $this->getCreatedAt()->format('d/m/Y'),
         ];
     }
 

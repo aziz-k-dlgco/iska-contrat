@@ -33,6 +33,9 @@ class ContratValidation implements TimestampableInterface
     #[ORM\Column]
     private ?\DateInterval $delai = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isManagerAction = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -82,6 +85,18 @@ class ContratValidation implements TimestampableInterface
     public function setDelai(\DateInterval $delai): self
     {
         $this->delai = $delai;
+
+        return $this;
+    }
+
+    public function isIsManagerAction(): ?bool
+    {
+        return $this->isManagerAction;
+    }
+
+    public function setIsManagerAction(?bool $isManagerAction): self
+    {
+        $this->isManagerAction = $isManagerAction;
 
         return $this;
     }

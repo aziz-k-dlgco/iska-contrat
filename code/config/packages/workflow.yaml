@@ -179,7 +179,7 @@ framework:
                     metadata:
                         label_color: "bg-amber-100 text-amber-600"
                         title: "Validation de la demande de contrat"
-                        description: "Validation de la demande de contrat par le département juridique. -"
+                        description: "Demande de contrat validée par le département juridique. -"
                 reject_manager:
                     from: pending_manager_approval
                     to: rejected_by_manager
