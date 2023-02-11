@@ -6,6 +6,7 @@ use Andante\TimestampableBundle\Timestampable\TimestampableInterface;
 use Andante\TimestampableBundle\Timestampable\TimestampableTrait;
 use App\Entity\Account\Departement;
 use App\Entity\Traits\OwnedByTrait;
+use App\Entity\Traits\UsersToNotifyTrait;
 use App\Repository\Contrat\ContratRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ContratRepository::class)]
 class Contrat implements TimestampableInterface
 {
-    use TimestampableTrait, OwnedByTrait;
+    use TimestampableTrait, OwnedByTrait, UsersToNotifyTrait;
 
     const CREATED = "created";
     const DEFAULT_TEXT = "Non renseigné";

@@ -1,9 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import Transition from '../utils/Transition';
+import { ApiContext } from '../providers/ApiContext';
 
 function DropdownNotifications({ align }) {
+	const history = useHistory();
+	const { Proxy } = useContext(ApiContext);
 	const [dropdownOpen, setDropdownOpen] = useState(false);
+	const [notifications, setNotifications] = useState([]);
 
 	const trigger = useRef(null);
 	const dropdown = useRef(null);
@@ -24,6 +28,18 @@ function DropdownNotifications({ align }) {
 		return () => document.removeEventListener('click', clickHandler);
 	});
 
+	useEffect(() => {
+		Proxy()
+			.get('/api/notifications')
+			.then((res) => {
+				console.log(res.data);
+				setNotifications(res.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
+
 	// close if the esc key is pressed
 	useEffect(() => {
 		const keyHandler = ({ keyCode }) => {
@@ -33,6 +49,12 @@ function DropdownNotifications({ align }) {
 		document.addEventListener('keydown', keyHandler);
 		return () => document.removeEventListener('keydown', keyHandler);
 	});
+
+	const goToPage = (path) => {
+		setDropdownOpen(!dropdownOpen);
+		// Redirect to the page
+		//history.push(path);
+	};
 
 	return (
 		<div className="relative inline-flex">
@@ -84,72 +106,59 @@ function DropdownNotifications({ align }) {
 						Notifications
 					</div>
 					<ul>
-						<li className="border-b border-slate-200 last:border-0">
-							<Link
-								className="block py-2 px-4 hover:bg-slate-50"
-								to="#0"
-								onClick={() => setDropdownOpen(!dropdownOpen)}
-							>
-								<span className="block text-sm mb-2">
-									📣{' '}
-									<span className="font-medium text-slate-800">
-										Edit your information in a swipe
-									</span>{' '}
-									Sint occaecat cupidatat non proident, sunt
-									in culpa qui officia deserunt mollit anim.
-								</span>
-								<span className="block text-xs font-medium text-slate-400">
-									Feb 12, 2021
-								</span>
-							</Link>
-						</li>
-						<li className="border-b border-slate-200 last:border-0">
-							<Link
-								className="block py-2 px-4 hover:bg-slate-50"
-								to="#0"
-								onClick={() => setDropdownOpen(!dropdownOpen)}
-							>
-								<span className="block text-sm mb-2">
-									📣{' '}
-									<span className="font-medium text-slate-800">
-										Edit your information in a swipe
-									</span>{' '}
-									Sint occaecat cupidatat non proident, sunt
-									in culpa qui officia deserunt mollit anim.
-								</span>
-								<span className="block text-xs font-medium text-slate-400">
-									Feb 9, 2021
-								</span>
-							</Link>
-						</li>
-						<li className="border-b border-slate-200 last:border-0">
-							<Link
-								className="block py-2 px-4 hover:bg-slate-50"
-								to="#0"
-								onClick={() => setDropdownOpen(!dropdownOpen)}
-							>
-								<span className="block text-sm mb-2">
-									🚀
-									<span className="font-medium text-slate-800">
-										Say goodbye to paper receipts!
-									</span>{' '}
-									Sint occaecat cupidatat non proident, sunt
-									in culpa qui officia deserunt mollit anim.
-								</span>
-								<span className="block text-xs font-medium text-slate-400">
-									Jan 24, 2020
-								</span>
-							</Link>
-						</li>
+						{notifications.length > 0 ? (
+							notifications.slice(0, 3).map((notification) => (
+								<li className="border-b border-slate-200 last:border-0">
+									<Link
+										className="block py-2 px-4 hover:bg-slate-50"
+										to={notification.link}
+										onClick={() =>
+											setDropdownOpen(!dropdownOpen)
+										}
+									>
+										<span className="block text-sm mb-2">
+											<span className="font-medium text-slate-800">
+												{notification.title +
+													' #' +
+													notification.objectId}
+											</span>
+											<br />
+											{notification.text}
+										</span>
+										<span className="block text-xs font-medium text-slate-400">
+											{notification.createdAt}
+										</span>
+									</Link>
+								</li>
+							))
+						) : (
+							<li className="border-b border-slate-200 last:border-0">
+								<Link
+									className="block py-2 px-4 hover:bg-slate-50"
+									to="#0"
+									onClick={() =>
+										setDropdownOpen(!dropdownOpen)
+									}
+								>
+									<span className="block text-sm mb-2">
+										📄{' '}
+										<span className="font-medium text-slate-800">
+											Aucune notification
+										</span>{' '}
+									</span>
+								</Link>
+							</li>
+						)}
 					</ul>
-					{/* See more button */}
-					<Link
-						className="block py-2 px-4 text-sm font-medium text-slate-500 hover:bg-slate-50"
-						to="#0"
-						onClick={() => setDropdownOpen(!dropdownOpen)}
-					>
-						See all notifications
-					</Link>
+					{notifications.length > 0 && (
+						<Link
+							className="block py-2 px-4 text-sm font-medium text-slate-500 hover:bg-slate-50"
+							to="#0"
+							onClick={() => setDropdownOpen(!dropdownOpen)}
+						>
+							Voir plus
+						</Link>
+					)}
 				</div>
 			</Transition>
 		</div>

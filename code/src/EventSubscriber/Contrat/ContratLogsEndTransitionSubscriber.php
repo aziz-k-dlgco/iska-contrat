@@ -2,10 +2,12 @@
 
 namespace App\EventSubscriber\Contrat;
 
+use App\Entity\Account\Notifications;
 use App\Entity\Account\User;
 use App\Entity\Contrat\Contrat;
 use App\Entity\Contrat\ContratLogs;
 use App\Entity\Contrat\ContratValidation;
+use App\Repository\Account\UserRepository;
 use Carbon\CarbonInterval;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,7 +19,9 @@ class ContratLogsEndTransitionSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private Security $security,
-        private WorkflowInterface $contractRequestStateMachine
+        private WorkflowInterface $contractRequestStateMachine,
+        private EntityManagerInterface $entityManager,
+        private UserRepository $userRepository
     )
     {
     }
@@ -76,14 +80,38 @@ class ContratLogsEndTransitionSubscriber implements EventSubscriberInterface
         $metadata = $this->contractRequestStateMachine->getMetadataStore()->getTransitionMetadata(
             $event->getTransition()
         );
+        $title = $metadata['title'] ?? 'Changement de statut';
+        $text_message = isset($metadata['description']) ? ($metadata['description'] . ' ' . $user->getLib()) :  'No log';
         // Ajout du log
-        $contrat->addLog(
+        $contrat
+            ->addUsersToNotify($user)
+            ->addLog(
             (new ContratLogs())
-                ->setTitle($metadata['title'] ?? 'Changement de statut')
+                ->setTitle($title)
                 ->setUser($user)
                 ->setTransition($event->getTransition()->getName())
-                ->setText(isset($metadata['description']) ? ($metadata['description'] . ' ' . $user->getLib()) :  'No log')
+                ->setText($text_message)
             );
+
+        $this->entityManager->persist($contrat);
+        $this->entityManager->flush();
+        // Notification des utilisateurs
+        foreach ($contrat->getUsersToNotify() as $userToNotify) {
+            $user = $this->userRepository->find($userToNotify);
+            if($user) {
+                $notif = (new Notifications())
+                    ->setTitle($title)
+                    ->setUser($user)
+                    ->setObjectType(Notifications::OBJECT_TYPE_CONTRAT)
+                    ->setLink('/contrat/consult/' . $contrat->getId())
+                    ->setText($text_message);
+                if ($contrat->getId()){
+                    $notif->setObjectId($contrat->getId());
+                }
+                $this->entityManager->persist($notif);
+            }
+        }
+        $this->entityManager->flush();
 
         // TODO : Ajouter un mail de notification
     }
