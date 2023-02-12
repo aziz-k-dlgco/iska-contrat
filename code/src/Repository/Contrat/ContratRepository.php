@@ -5,6 +5,8 @@ namespace App\Repository\Contrat;
 use App\Entity\Account\User;
 use App\Entity\Contrat\Contrat;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -74,4 +76,19 @@ class ContratRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function countByState(string $state) : int
+    {
+        return $this->createQueryBuilder('c')
+            ->select('count(c.id) as total')
+            ->andWhere('c.currentState = :state')
+            ->setParameter('state', $state)
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
 }

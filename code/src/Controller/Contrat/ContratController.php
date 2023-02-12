@@ -19,6 +19,7 @@ use App\Service\Contrat\ContratPerms;
 use App\Service\Contrat\ContratUpdateState;
 use App\Service\Contrat\CreateContrat;
 use App\Service\Contrat\ListContrat;
+use App\Service\Contrat\StatsContrat;
 use App\Service\Contrat\UpdateContrat;
 use App\Service\Documents\GetContratDocuments;
 use App\Service\Utils\SlugTraitToJson;
@@ -60,6 +61,20 @@ class ContratController extends AbstractController
                 'errors' => $e->getMessage() . ' ' . $e->getTraceAsString(),
             ], Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    #[Route('/stats', name: 'app_contrat_contrat_stats', methods: ['GET'])]
+    public function stats(StatsContrat $statsContratSrv): JsonResponse
+    {
+        return new JsonResponse($statsContratSrv->getStats());
+        /*try {
+            return new JsonResponse($statsContratSrv->getStats());
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'Error',
+                'errors' => $e->getMessage() . ' ' . $e->getTraceAsString(),
+            ], Response::HTTP_BAD_REQUEST);
+        }*/
     }
 
     #[Route('/infos/{id}', name: 'app_contrat_contrat_show', methods: ['GET'])]

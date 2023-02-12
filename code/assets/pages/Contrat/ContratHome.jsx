@@ -13,21 +13,42 @@ function ContratHome() {
 	const title = 'Accueil - Gestion Contractuelle';
 	document.title = title;
 	const [sidebarOpen, setSidebarOpen] = useState(false);
-	const [loading, setLoading] = useState(true);
+	const [loadingTable, setLoadingTable] = useState(true);
+	const [loadingStats, setLoadingStats] = useState(true);
 	const [data, setData] = useState([]);
+	const [stats, setStats] = useState([]);
 
 	useEffect(() => {
 		Proxy()
 			.get('/api/contrat')
 			.then((res) => {
 				setData(res.data);
-				setLoading(false);
+				setLoadingTable(false);
 			})
 			.catch((err) => {
 				console.log(err);
-				setLoading(false);
+				setLoadingTable(false);
+			});
+
+		Proxy()
+			.get('/api/contrat/stats')
+			.then((res) => {
+				setStats(res.data);
+				setLoadingStats(false);
+			})
+			.catch((err) => {
+				console.log(err);
+				setLoadingStats(false);
 			});
 	}, []);
+
+	const Loader = () => {
+		return (
+			<div className="flex flex-col items-center justify-center h-80">
+				<img src={loaderSVG} className="w-80" alt="Loading..." />
+			</div>
+		);
+	};
 
 	return (
 		<div className="flex h-screen overflow-hidden">
@@ -88,26 +109,28 @@ function ContratHome() {
 							</div>
 						</div>
 
-						<div className="grid grid-cols-12 gap-6 mb-5">
-							<Card
-								title={'Contrat'}
-								value={'1'}
-								tooltip="CWWE"
-							/>
-							<Card title={'Contrat'} value={'1'} />
-							<Card title={'Contrat'} value={'1'} />
-							<Card title={'Contrat'} value={'1'} />
-						</div>
-						{loading ? (
-							<>
-								{/* Center loader horizontally and vertically */}
-								<div className="flex flex-col items-center justify-center h-80">
-									<img src={loaderSVG} alt="Loading..." />
-								</div>
-							</>
+						{loadingStats ? (
+							<Loader />
 						) : (
-							<Table data={data} />
+							<div className="grid grid-cols-12 gap-6 mb-5">
+								{stats.length !== 0 &&
+									stats.map((stat, index) => (
+										<Card
+											key={index}
+											title={stat.lib}
+											value={stat.value}
+											// if stat.description is not null, then display tooltip
+											tooltip={
+												stat.description
+													? stat.description
+													: null
+											}
+										/>
+									))}
+							</div>
 						)}
+
+						{loadingTable ? <Loader /> : <Table data={data} />}
 					</div>
 				</main>
 			</div>

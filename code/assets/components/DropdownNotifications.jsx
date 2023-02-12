@@ -108,7 +108,10 @@ function DropdownNotifications({ align }) {
 					<ul>
 						{notifications.length > 0 ? (
 							notifications.slice(0, 3).map((notification) => (
-								<li className="border-b border-slate-200 last:border-0">
+								<li
+									className="border-b border-slate-200 last:border-0"
+									key={notification.id}
+								>
 									<Link
 										className="block py-2 px-4 hover:bg-slate-50"
 										to={notification.link}
