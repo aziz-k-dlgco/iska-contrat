@@ -92,9 +92,9 @@ function ContratHome() {
 										</button>
 									</Link>
 								</div>
-								<div className="mb-4 sm:mb-0 ml-2">
+								{/*<div className="mb-4 sm:mb-0 ml-2">
 									<button className="btn bg-emerald-500 hover:bg-emerald-600 text-white">
-										{/* SVG Clock */}
+										 SVG Clock
 										<svg
 											className="w-4 h-4 fill-current opacity-50 shrink-0"
 											viewBox="0 0 16 16"
@@ -105,7 +105,7 @@ function ContratHome() {
 											Activités recentes
 										</span>
 									</button>
-								</div>
+								</div>*/}
 							</div>
 						</div>
 

@@ -42,7 +42,6 @@ class ListContrat
 
         // Récupération des demandes de contrat en attente de validation par l'utilisateur juridique
         if(($this->checkUserRole)($user, 'ROLE_USER_JURIDIQUE')){
-            dump('hh');
             $data = array_merge(
                 $data,
                 array_map(
@@ -70,7 +69,6 @@ class ListContrat
 
         // Récupération des contrats du manager juridique
         if(($this->checkUserRole)($user, 'ROLE_MANAGER_JURIDIQUE')){
-            dump('oo');
             // Ayant déja récupéré ses contrats initiés, ceux qu'il a traités et ceux de son département, il ne reste que les demandes en attente de validation
             $data = array_merge(
                 $data,
@@ -101,7 +99,6 @@ class ListContrat
         // apply libContrat filter on currentState field
         array_walk($data, fn(&$item) => $item['currentState'] = ($this->statusToLibContrat)($item['currentState']));
         array_walk($data, fn(&$item) => $item['link'] = '/contrat/consult/' . $item['id']);
-        dump(gettype($data));
         return [
             'title' => $title,
             'headers' => $this->getHeaders(),
@@ -115,62 +112,92 @@ class ListContrat
                 'id' => [
                     'title' => "Identifiant",
                     'display' => false,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
                 'object' => [
                     'title' => "Objet",
                     'display' => false,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
                 'ownedBy' => [
                     'title' => "Créé par",
                     'display' => true,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
                 'createdAt' => [
                     'title' => "Créé le",
                     'display' => true,
+                    'type' => 'date',
+                    'order' => 'ASC'
                 ],
                 'typeContrat' => [
                     'title' => "Type de contrat",
                     'display' => true,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
                 'departementInitiateur' => [
                     'title' => "Département initiateur",
                     'display' => true,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
                 'modeFacturation' => [
                     'title' => "Mode de facturation",
                     'display' => true,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
                 'modePaiement' => [
                     'title' => "Mode de paiement",
                     'display' => true,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
                 'currentState' => [
                     'title' => "Statut",
                     'display' => true,
+                    'type' => 'object',
+                    'order' => 'ASC'
                 ],
                 'identiteCocontractant' => [
                     'title' => "Cocontractant",
                     'display' => false,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
                 'dateEntreeVigueur' => [
                     'title' => "Date d'entrée en vigueur",
                     'display' => false,
+                    'type' => 'date',
+                    'order' => 'ASC'
                 ],
                 'dateFinContrat' => [
                     'title' => "Date de fin",
                     'display' => false,
+                    'type' => 'date',
+                    'order' => 'ASC'
                 ],
                 'delaiDenonciation' => [
                     'title' => "Délai de dénonciation",
                     'display' => false,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
                 'modeRenouvellement' => [
                     'title' => "Mode de renouvellement",
                     'display' => false,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
                 'periodicitePaiement' => [
                     'title' => "Périodicité de paiement",
                     'display' => false,
+                    'type' => 'string',
+                    'order' => 'ASC'
                 ],
             ];
     }

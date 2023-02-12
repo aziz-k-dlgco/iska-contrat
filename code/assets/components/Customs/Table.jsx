@@ -21,23 +21,12 @@ export default function Table({ data }) {
 	const [indexOfFirstItem, setIndexOfFirstItem] = React.useState(
 		indexOfLastItem - itemsPerPage
 	);
+	const [localData, setLocalData] = React.useState(data || { data: [] });
 	const [currentItems, setCurrentItems] = React.useState([]);
 
 	useEffect(() => {
-		if (data) {
-			if (data.data) {
-				if (data.data.length > 0) {
-					setTitle(data.title);
-					setCount(data.data.length);
-					setHeaders(data.headers);
-					setSelectedFilters(data.filters);
-					setCurrentItems(
-						data.data.slice(indexOfFirstItem, indexOfLastItem)
-					);
-				}
-			}
-		}
-	}, [data]);
+		initData(localData);
+	}, [localData]);
 
 	const menuColumns = () => {
 		setDisplayColumnsSelector(!displayColumnsSelector);
@@ -56,7 +45,7 @@ export default function Table({ data }) {
 	};
 
 	const nextPage = () => {
-		if (indexOfLastItem < data.data.length) {
+		if (indexOfLastItem < localData.data.length) {
 			setCurrentPage(currentPage + 1);
 			setIndexOfLastItem(indexOfLastItem + itemsPerPage);
 			setIndexOfFirstItem(indexOfFirstItem + itemsPerPage);
@@ -72,14 +61,83 @@ export default function Table({ data }) {
 	};
 
 	useEffect(() => {
-		if (data.data) {
-			if (data.data.length > 0) {
+		if (localData.data) {
+			if (localData.data.length > 0) {
 				setCurrentItems(
-					data.data.slice(indexOfFirstItem, indexOfLastItem)
+					localData.data.slice(indexOfFirstItem, indexOfLastItem)
 				);
 			}
 		}
 	}, [indexOfLastItem, indexOfFirstItem]);
+
+	function sortTable(key, type, order) {
+		/*
+			- key is the key of the object to sort by
+			- type is the type of data to sort by
+			- order is string, ASC or DESC
+			type can be string, object, date
+			date is formatted as d/m/Y
+			object is an object with a key and a label, use label to sort by, label is string
+			if order is DESC, sort using the key in reverse order else if ASC, sort using the key in ascending order
+			and modify the localData.headers array to reflect the new order
+		 */
+		let sortedItems = [];
+		if (order === 'DESC') {
+			sortedItems = localData.data.sort((a, b) => {
+				if (type === 'string') {
+					return a[key].localeCompare(b[key]);
+				} else if (type === 'object') {
+					return a[key].label.localeCompare(b[key].label);
+				} else if (type === 'date') {
+					let date1 = a[key].split('/');
+					let date2 = b[key].split('/');
+					let d1 = new Date(date1[2], date1[1], date1[0]);
+					let d2 = new Date(date2[2], date2[1], date2[0]);
+					return d1 - d2;
+				}
+			});
+		}
+		if (order === 'ASC') {
+			sortedItems = localData.data.sort((a, b) => {
+				if (type === 'string') {
+					return b[key].localeCompare(a[key]);
+				} else if (type === 'object') {
+					return b[key].label.localeCompare(a[key].label);
+				} else if (type === 'date') {
+					let date1 = a[key].split('/');
+					let date2 = b[key].split('/');
+					let d1 = new Date(date1[2], date1[1], date1[0]);
+					let d2 = new Date(date2[2], date2[1], date2[0]);
+					return d2 - d1;
+				}
+			});
+		}
+		let newHeaders = headers;
+		newHeaders[key].order = order === 'ASC' ? 'DESC' : 'ASC';
+		initData({
+			title: localData.title,
+			count: localData.count,
+			headers: newHeaders,
+			filters: localData.filters,
+			data: sortedItems
+		});
+	}
+
+	const initData = (data) => {
+		if (data) {
+			if (data.data) {
+				if (data.data.length > 0) {
+					setTitle(data.title);
+					setCount(data.data.length);
+					setHeaders(data.headers);
+					setSelectedFilters(data.filters);
+					setCurrentItems(
+						data.data.slice(indexOfFirstItem, indexOfLastItem)
+					);
+				}
+			}
+		}
+	};
 
 	return (
 		<div className="bg-white shadow-lg rounded-sm border border-slate-200 relative">
@@ -230,8 +288,22 @@ export default function Table({ data }) {
 										<th
 											className="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap"
 											key={index}
+											onClick={() => {
+												sortTable(
+													key,
+													headers[key].type,
+													headers[key].order
+												);
+											}}
 										>
 											{headers[key].title}
+											<img
+												src={require(`../../misc/sort_${headers[
+													key
+												].order.toLowerCase()}.svg`)}
+												className="inline mr-5 w-6"
+												alt={headers[key].title}
+											/>
 										</th>
 									) : null;
 								})}
