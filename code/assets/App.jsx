@@ -18,13 +18,10 @@ import ContratNew from './pages/Contrat/ContratNew';
 import PageNotFound from './pages/utility/PageNotFound';
 import ReactDOM from 'react-dom/client';
 import Signin from './pages/Signin';
-import RouteGuard from './components/Customs/RouteGuard';
-import { LogoutContext, LogoutProvider } from './providers/LogoutContext';
-import { DataProvider } from './providers/DataProvider';
-import { JWTDataProvider } from './providers/JWTDataContext';
 import ContratConsulter from './pages/Contrat/ContratConsulter';
 import { ApiContext, ApiProvider } from './providers/ApiContext';
 import { AuthContext, AuthProvider } from './providers/AuthContext';
+import NotificationsCalendar from './pages/NotificationsCalendar';
 
 function App() {
 	const { isConnected } = useContext(AuthContext);
@@ -47,6 +44,11 @@ function App() {
 				{isConnected ? (
 					<>
 						<Route exact path="/" component={Home} />
+						<Route
+							exact
+							path="/notifications"
+							component={NotificationsCalendar}
+						/>
 						<Route exact path="/contrat" component={ContratHome} />
 						<Route path="/contrat/new" component={ContratNew} />
 						<Route

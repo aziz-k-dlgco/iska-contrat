@@ -102,6 +102,7 @@ class ContratLogsEndTransitionSubscriber implements EventSubscriberInterface
                 $notif = (new Notifications())
                     ->setTitle($title)
                     ->setUser($user)
+                    ->setColor($metadata['label_color'] ?? "bg-sky-100 text-sky-600")
                     ->setObjectType(Notifications::OBJECT_TYPE_CONTRAT)
                     ->setLink('/contrat/consult/' . $contrat->getId())
                     ->setText($text_message);

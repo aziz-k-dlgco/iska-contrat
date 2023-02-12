@@ -3,6 +3,7 @@
 namespace App\Repository\Account;
 
 use App\Entity\Account\Notifications;
+use App\Entity\Account\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -63,4 +64,17 @@ class NotificationsRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    public function findUserLastYearNotifications(User $user): array
+    {
+        $date = new \DateTime();
+        $date->modify('-1 year');
+        return $this->createQueryBuilder('n')
+            ->andWhere('n.user = :user')
+            ->andWhere('n.createdAt > :gte')
+            ->setParameter('user', $user)
+            ->setParameter('gte', $date)
+            ->orderBy('n.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -32,7 +32,6 @@ function DropdownNotifications({ align }) {
 		Proxy()
 			.get('/api/notifications')
 			.then((res) => {
-				console.log(res.data);
 				setNotifications(res.data);
 			})
 			.catch((err) => {
@@ -156,7 +155,7 @@ function DropdownNotifications({ align }) {
 					{notifications.length > 0 && (
 						<Link
 							className="block py-2 px-4 text-sm font-medium text-slate-500 hover:bg-slate-50"
-							to="#0"
+							to="/notifications"
 							onClick={() => setDropdownOpen(!dropdownOpen)}
 						>
 							Voir plus

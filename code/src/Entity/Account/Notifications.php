@@ -57,6 +57,9 @@ class Notifications implements CreatedAtTimestampableInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $color = "bg-sky-100 text-sky-600";
+
     public function toArray(): array
     {
         return [
@@ -144,6 +147,18 @@ class Notifications implements CreatedAtTimestampableInterface
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(?string $color): self
+    {
+        $this->color = $color;
 
         return $this;
     }
