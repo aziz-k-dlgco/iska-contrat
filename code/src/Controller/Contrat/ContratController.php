@@ -66,15 +66,14 @@ class ContratController extends AbstractController
     #[Route('/stats', name: 'app_contrat_contrat_stats', methods: ['GET'])]
     public function stats(StatsContrat $statsContratSrv): JsonResponse
     {
-        return new JsonResponse($statsContratSrv->getStats());
-        /*try {
+        try {
             return new JsonResponse($statsContratSrv->getStats());
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'Error',
                 'errors' => $e->getMessage() . ' ' . $e->getTraceAsString(),
             ], Response::HTTP_BAD_REQUEST);
-        }*/
+        }
     }
 
     #[Route('/infos/{id}', name: 'app_contrat_contrat_show', methods: ['GET'])]
