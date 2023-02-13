@@ -428,6 +428,7 @@ function NotificationsCalendar() {
 										setNotificationsDays(null)
 									}
 									title={`Notifications du ${notificationsDays} ${monthNames[month]} ${year}.`}
+									isHeaderSticky={true}
 								>
 									<div className="px-5 pt-4 pb-1">
 										<div className="text-sm">
