@@ -1,2 +1,3 @@
 /databases_saves/
 /docker/
+ sudo apt-get remove docker  docker.io containerd runc

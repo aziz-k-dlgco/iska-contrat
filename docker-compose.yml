@@ -61,6 +61,21 @@ services:
     depends_on:
       - www
 
+  www:
+    build: ubuntu
+    container_name: iska_symfony
+    volumes:
+      - ./:/iska
+    restart: always
+    depends_on:
+      - redis
+      - mariadb
+    networks:
+      - iska_network
+      - iska_mails
+      - iska_database
+    
+
 networks:
   iska_network:
   iska_mails:
